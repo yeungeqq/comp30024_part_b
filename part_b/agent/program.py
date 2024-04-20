@@ -64,3 +64,22 @@ class Agent:
         # demonstration purposes. You should replace this with your own logic
         # to update your agent's internal game state representation.
         print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
+
+    # generate a list of possible moves and number of moves given the current state
+    def possible_moves(color: PlayerColor, red, blue):
+        actions = []
+        number = len(actions)
+        return actions, number
+
+    # calculate utility of a possible move
+    def utility(color: PlayerColor, action, red, blue):
+        score = 1 + 1
+        return score
+    
+    # return an action based on the utility of given moves by using the minimax strategy
+    # can implement ab pruning in this function
+    def minimax():
+        return None
+    
+    
+
