@@ -67,9 +67,73 @@ class Agent:
 
     # generate a list of possible moves and number of moves given the current state
     def possible_moves(color: PlayerColor, red, blue):
+        not_expandable_block = red[:] + blue[:]
+
+        blocks = red
+        if color == PlayerColor.BLUE:
+            blocks = blue
+        
         actions = []
-        number = len(actions)
-        return actions, number
+        for block in blocks:
+            if (block.up(1) not in not_expandable_block):
+                temp_list = []
+                temp_list.append(block.up(1))
+                actions.append(temp_list)
+            if (block.down(1) not in not_expandable_block):
+                temp_list = []
+                temp_list.append(block.down(1))
+                actions.append(temp_list)
+            if (block.left(1) not in not_expandable_block):
+                temp_list = []
+                temp_list.append(block.left(1))
+                actions.append(temp_list)
+            if (block.right(1) not in not_expandable_block):
+                temp_list = []
+                temp_list.append(block.right(1))
+                actions.append(temp_list)
+        # return None if no empty adjacent block
+        if len(actions) == 0: return None
+        # keep adding adjacent red blocks until it is long enough (4 blocks) to form a place action
+        while len(actions[0]) < 4:
+            possible_move = actions.pop(0)
+            for block in list(possible_move):
+                if (block.up(1) not in not_expandable_block and block.up(1) not in list(possible_move)):
+                    clone = list(possible_move)[:]
+                    clone.append(block.up(1))
+                    duplicate = False
+                    for item in actions:
+                        if set(item) == set(clone):
+                            duplicate = True
+                            break
+                    if not duplicate: actions.append(clone)
+                if (block.down(1) not in not_expandable_block and block.down(1) not in list(possible_move)):
+                    clone = list(possible_move)[:]
+                    clone.append(block.down(1))
+                    duplicate = False
+                    for item in actions:
+                        if set(item) == set(clone):
+                            duplicate = True
+                            break
+                    if not duplicate: actions.append(clone)
+                if (block.left(1) not in not_expandable_block and block.left(1) not in list(possible_move)):
+                    clone = list(possible_move)[:]
+                    clone.append(block.left(1))
+                    duplicate = False
+                    for item in actions:
+                        if set(item) == set(clone):
+                            duplicate = True
+                            break
+                    if not duplicate: actions.append(clone)
+                if (block.right(1) not in not_expandable_block and block.right(1) not in list(possible_move)):
+                    clone = list(possible_move)[:]
+                    clone.append(block.right(1))
+                    duplicate = False
+                    for item in actions:
+                        if set(item) == set(clone):
+                            duplicate = True
+                            break
+                    if not duplicate: actions.append(clone)
+        return actions, len(actions)
 
     # calculate utility of a possible move
     def utility(color: PlayerColor, action, red, blue):
