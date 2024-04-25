@@ -1,9 +1,9 @@
 # COMP30024 Artificial Intelligence, Semester 1 2024
 # Project Part B: Game Playing Agent
-
+import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
-
+# Agent2 places actions by randomly selecting 4 adjecent blocks on the board that hasn't been placed yet
 class Agent:
     """
     This class is the "entry point" for your agent, providing an interface to
@@ -33,26 +33,48 @@ class Agent:
         to take an action. It must always return an action object. 
         """
 
-        # Below we have hardcoded two actions to be played depending on whether
-        # the agent is playing as BLUE or RED. Obviously this won't work beyond
-        # the initial moves of the game, so you should use some game playing
-        # technique(s) to determine the best action to take.
+        # Randomly select 4 adjacent blocks on the board that hasn't been placed yet
+        # Check whether the randomly selected blocks have been placed in the game board
+        place_action_coords = []
+        while len(place_action_coords) < 4:
+            xcoord = random.randint(0, 10)
+            ycoord = random.randint(0, 10)
+            for place_action_piece in self.place_action_list:
+                for coord in place_action_piece.coords:
+                    if Coord(xcoord, ycoord) == coord:
+                        continue
+            if len(place_action_coords) == 0:
+                if Coord(xcoord, ycoord) not in place_action_coords:
+                    place_action_coords.append(Coord(xcoord, ycoord))
+            else:
+                if Coord(xcoord, ycoord) not in place_action_coords:
+                    if xcoord + 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord - 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord == place_action_coords[0].r and ycoord + 1 == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord == place_action_coords[0].r and ycoord - 1 == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    else:
+                        continue
+
         match self._color:
             case PlayerColor.RED:
                 print("Testing: RED is playing a PLACE action")
                 return PlaceAction(
-                    Coord(3, 3), 
-                    Coord(3, 4), 
-                    Coord(4, 3), 
-                    Coord(4, 4)
+                    place_action_coords[0], 
+                    place_action_coords[1], 
+                    place_action_coords[2], 
+                    place_action_coords[3]
                 )
             case PlayerColor.BLUE:
                 print("Testing: BLUE is playing a PLACE action")
                 return PlaceAction(
-                    Coord(2, 3), 
-                    Coord(2, 4), 
-                    Coord(2, 5), 
-                    Coord(2, 6)
+                    place_action_coords[0], 
+                    place_action_coords[1], 
+                    place_action_coords[2], 
+                    place_action_coords[3]
                 )
 
     def update(self, color: PlayerColor, action: Action, **referee: dict):
