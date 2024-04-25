@@ -81,11 +81,11 @@ class Agent:
 
         print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
         print('\n')
-        print(self.place_action_list)
+        print("agent 2 place action list: " + str(self.place_action_list))
         print('\n')
-        print(self.place_action_red)
+        print("agent 2 red place action list: " + str(self.place_action_red))
         print('\n')
-        print(self.place_action_blue)
+        print("agent 2 blue place action list: " + str(self.place_action_blue))
         
 
     # generate a list of possible moves and number of moves given the current state
@@ -167,6 +167,3 @@ class Agent:
     # can implement ab pruning in this function
     def minimax():
         return None
-    
-    
-
