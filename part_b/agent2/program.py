@@ -167,6 +167,3 @@ class Agent:
     # can implement ab pruning in this function
     def minimax():
         return None
-    
-    
-

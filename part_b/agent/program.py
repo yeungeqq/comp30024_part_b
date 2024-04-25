@@ -12,7 +12,9 @@ class Agent:
 
     # Class attribute that stores all the place actions that has been played by both agents
     place_action_list = []
-
+    place_action_red = []
+    place_action_blue = []
+    
     def __init__(self, color: PlayerColor, **referee: dict):
         """
         This constructor method runs when the referee instantiates the agent.
@@ -71,6 +73,10 @@ class Agent:
         # agents in a list
     
         self.place_action_list.append(action)
+        if color == PlayerColor.RED:
+            self.place_action_red.append(action)
+        else:
+            self.place_action_blue.append(action)
 
         print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
         print('\n')
