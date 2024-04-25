@@ -4,6 +4,7 @@ import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 # Agent2 places actions by randomly selecting 4 adjecent blocks on the board that hasn't been placed yet
+
 class Agent:
     """
     This class is the "entry point" for your agent, providing an interface to
