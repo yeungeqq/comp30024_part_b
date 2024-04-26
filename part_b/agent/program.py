@@ -12,13 +12,10 @@ class Agent:
 
     # Class attribute that stores all the place actions that has been played by both agents
     place_action_list = []
-<<<<<<< Updated upstream
-=======
     place_action_red = []
     place_action_blue = []
     red_move_count = 0
     blue_move_count = 0
->>>>>>> Stashed changes
 
     def __init__(self, color: PlayerColor, **referee: dict):
         """
