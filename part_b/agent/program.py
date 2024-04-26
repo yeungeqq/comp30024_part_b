@@ -189,14 +189,26 @@ class Agent:
         if moves is None: return [self.utility(self, color, red, blue), None]
 
         # loop through the possible moves and search till the end of the tree
+        score_list = []
+        action_list = []
         for move in moves:
             if color == PlayerColor.RED:
                 score, action = self.minimax(self, color, red[:].append(move), blue)
+                score_list.append(score)
+                action_list.append(action)
             if color == PlayerColor.BLUE:
                 score, action = self.minimax(self, color, red, blue[:].append(move))
-
-
-        return action
+                score_list.append(score)
+                action_list.append(action)
+        
+        if color == PlayerColor.RED:
+            score = max(score_list)
+            action = action_list[score_list.index(max(score_list))]
+            return score, action
+        else:
+            score = min(score_list)
+            action = action_list[score_list.index(min(score_list))]
+            return score, action
     
     def random_move():
         return None
