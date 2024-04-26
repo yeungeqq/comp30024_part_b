@@ -245,10 +245,13 @@ class Agent:
         return place_action_coords
 
 def eliminate_lines(red, blue):
-    # check if there are any completed rows. If there are, remove the non-expandable blocks that are part of the completed row
+
     red = red[:]
     blue = blue[:]
     block = red + blue
+    eliminated_coords_list = []
+
+    # check if there are any completed rows. If there are, add these coords to the eliminated_coords_list.
 
     for i in range(11):
         row = []
@@ -256,19 +259,24 @@ def eliminate_lines(red, blue):
             row.append(Coord(i, j))
         if set(row).issubset(set(block)):
             for coord in row:
-                if coord in red: red.remove(coord)
-                if coord in blue: blue.remove(coord)
-                block.remove(coord)
-    # check if there are any completed columns. If there are, remove the non-expandable blocks
-    # that are part of the completed column
+                eliminated_coords_list.append(coord)
+
+    # check if there are any completed columns. If there are, add these coords to the eliminated_coords_list.
+
     for i in range(11):
         column = []
         for j in range(11):
             column.append(Coord(j, i))
         if set(column).issubset(set(block)):
             for coord in column:
-                if coord in red: red.remove(coord)
-                if coord in blue: blue.remove(coord)
-                block.remove(coord)
-        
+                eliminated_coords_list.append(coord)
+    
+    # Go through the eliminated_coords_list and remove all the non-expandable blocks that are a part of 
+    # any complete rows or columns.
+
+    for coord in eliminated_coords_list:
+        if coord in red: red.remove(coord)
+        if coord in blue: blue.remove(coord)
+        block.remove(coord)
+
     return red, blue
