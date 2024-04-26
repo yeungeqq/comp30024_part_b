@@ -12,6 +12,13 @@ class Agent:
 
     # Class attribute that stores all the place actions that has been played by both agents
     place_action_list = []
+<<<<<<< Updated upstream
+=======
+    place_action_red = []
+    place_action_blue = []
+    red_move_count = 0
+    blue_move_count = 0
+>>>>>>> Stashed changes
 
     def __init__(self, color: PlayerColor, **referee: dict):
         """
@@ -38,20 +45,24 @@ class Agent:
         match self._color:
             case PlayerColor.RED:
                 print("Testing: RED is playing a PLACE action")
-                return PlaceAction(
-                    Coord(3, 3), 
-                    Coord(3, 4), 
-                    Coord(4, 3), 
-                    Coord(4, 4)
-                )
+                if self.red_move_count == 0:
+                    # random_move()
+                    return PlaceAction(
+                        Coord(3, 3), 
+                        Coord(3, 4), 
+                        Coord(4, 3), 
+                        Coord(4, 4)
+                    )
             case PlayerColor.BLUE:
                 print("Testing: BLUE is playing a PLACE action")
-                return PlaceAction(
-                    Coord(2, 3), 
-                    Coord(2, 4), 
-                    Coord(2, 5), 
-                    Coord(2, 6)
-                )
+                if self.blue_move_count == 0:
+                    # random_move()
+                    return PlaceAction(
+                        Coord(2, 3), 
+                        Coord(2, 4), 
+                        Coord(2, 5), 
+                        Coord(2, 6)
+                    )
 
     def update(self, color: PlayerColor, action: Action, **referee: dict):
         """
@@ -78,7 +89,7 @@ class Agent:
         print('\n')
 
     # generate a list of possible moves and number of moves given the current state
-    def possible_moves(color: PlayerColor, red, blue):
+    def possible_moves(color: PlayerColor, red, blue, goal_check):
         not_expandable_block = red[:] + blue[:]
 
         blocks = red
@@ -104,7 +115,10 @@ class Agent:
                 temp_list.append(block.right(1))
                 actions.append(temp_list)
         # return None if no empty adjacent block
-        if len(actions) == 0: return None
+        if len(actions) == 0:
+            # return true if performing goal check
+            if goal_check: return True
+            return None
         # keep adding adjacent red blocks until it is long enough (4 blocks) to form a place action
         while len(actions[0]) < 4:
             possible_move = actions.pop(0)
@@ -117,7 +131,11 @@ class Agent:
                         if set(item) == set(clone):
                             duplicate = True
                             break
-                    if not duplicate: actions.append(clone)
+                    if not duplicate:
+                        # return false when it is checking if the terminal state is reached
+                        if (goal_check & len(clone) == 4): return False
+                        # if not checking terminal state, proceed to append actions
+                        actions.append(clone)
                 if (block.down(1) not in not_expandable_block and block.down(1) not in list(possible_move)):
                     clone = list(possible_move)[:]
                     clone.append(block.down(1))
@@ -126,7 +144,9 @@ class Agent:
                         if set(item) == set(clone):
                             duplicate = True
                             break
-                    if not duplicate: actions.append(clone)
+                    if not duplicate:
+                        if (goal_check & len(clone) == 4): return False
+                        actions.append(clone)
                 if (block.left(1) not in not_expandable_block and block.left(1) not in list(possible_move)):
                     clone = list(possible_move)[:]
                     clone.append(block.left(1))
@@ -135,7 +155,9 @@ class Agent:
                         if set(item) == set(clone):
                             duplicate = True
                             break
-                    if not duplicate: actions.append(clone)
+                    if not duplicate:
+                        if (goal_check & len(clone) == 4): return False
+                        actions.append(clone)
                 if (block.right(1) not in not_expandable_block and block.right(1) not in list(possible_move)):
                     clone = list(possible_move)[:]
                     clone.append(block.right(1))
@@ -144,17 +166,42 @@ class Agent:
                         if set(item) == set(clone):
                             duplicate = True
                             break
-                    if not duplicate: actions.append(clone)
-        return actions, len(actions)
+                    if not duplicate:
+                        if (goal_check & len(clone) == 4): return False
+                        actions.append(clone)
+        if (goal_check & len(actions) == 0): return True
+        return actions
 
     # calculate utility of a possible move
-    def utility(color: PlayerColor, action, red, blue):
-        score = 1 + 1
-        return score
+    def utility(self, color: PlayerColor, red, blue):
+        # no possible move for red -> blue win, score = -1
+        if color == PlayerColor.RED:
+            if self.possible_moves(color, red, blue, True): return -1
+        # no possible move for blue -> red win, score = 1
+        elif color == PlayerColor.BLUE:
+            if self.possible_moves(PlayerColor.BLUE, red, blue, True): return 1
+        else:
+            return 0
     
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
-    def minimax():
+    def minimax(self, color: PlayerColor, red, blue):
+        # generate possible moves for given state (red and blue)
+        moves =  self.possible_moves(color, red, blue, False)
+        # if no possible move, return the utility and the move
+        if moves is None: return [self.utility(self, color, red, blue), None]
+
+        # loop through the possible moves and search till the end of the tree
+        for move in moves:
+            if color == PlayerColor.RED:
+                score, action = self.minimax(self, color, red[:].append(move), blue)
+            if color == PlayerColor.BLUE:
+                score, action = self.minimax(self, color, red, blue[:].append(move))
+
+
+        return action
+    
+    def random_move():
         return None
     
     
