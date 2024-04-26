@@ -1,6 +1,7 @@
 # COMP30024 Artificial Intelligence, Semester 1 2024
 # Project Part B: Game Playing Agent
 
+import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 
@@ -14,8 +15,7 @@ class Agent:
     place_action_list = []
     place_action_red = []
     place_action_blue = []
-    red_move_count = 0
-    blue_move_count = 0
+    player_move_count = 0
 
     def __init__(self, color: PlayerColor, **referee: dict):
         """
@@ -42,23 +42,25 @@ class Agent:
         match self._color:
             case PlayerColor.RED:
                 print("Testing: RED is playing a PLACE action")
-                if self.red_move_count == 0:
+                if self.player_move_count == 0:
+                    place_action_coords = self.random_move()
                     # random_move()
                     return PlaceAction(
-                        Coord(3, 3), 
-                        Coord(3, 4), 
-                        Coord(4, 3), 
-                        Coord(4, 4)
+                        place_action_coords[0], 
+                        place_action_coords[1], 
+                        place_action_coords[2], 
+                        place_action_coords[3]
                     )
             case PlayerColor.BLUE:
                 print("Testing: BLUE is playing a PLACE action")
-                if self.blue_move_count == 0:
+                if self.player_move_count == 0:
+                    place_action_coords = self.random_move()
                     # random_move()
                     return PlaceAction(
-                        Coord(2, 3), 
-                        Coord(2, 4), 
-                        Coord(2, 5), 
-                        Coord(2, 6)
+                        place_action_coords[0], 
+                        place_action_coords[1], 
+                        place_action_coords[2], 
+                        place_action_coords[3]
                     )
 
     def update(self, color: PlayerColor, action: Action, **referee: dict):
@@ -79,6 +81,10 @@ class Agent:
         # agents in a list
     
         self.place_action_list.append(action)
+        if color == PlayerColor.RED:
+            self.place_action_red.append(action)
+        else:
+            self.place_action_blue.append(action)
 
         print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
         print('\n')
@@ -198,8 +204,30 @@ class Agent:
 
         return action
     
-    def random_move():
-        return None
-    
-    
-
+    def random_move(self):
+        # Randomly select 4 adjacent blocks on the board that hasn't been placed yet
+        # Check whether the randomly selected blocks have been placed in the game board
+        place_action_coords = []
+        while len(place_action_coords) < 4:
+            xcoord = random.randint(0, 10)
+            ycoord = random.randint(0, 10)
+            for place_action_piece in self.place_action_list:
+                for coord in place_action_piece.coords:
+                    if Coord(xcoord, ycoord) == coord:
+                        continue
+            if len(place_action_coords) == 0:
+                if Coord(xcoord, ycoord) not in place_action_coords:
+                    place_action_coords.append(Coord(xcoord, ycoord))
+            else:
+                if Coord(xcoord, ycoord) not in place_action_coords:
+                    if xcoord + 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord - 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord == place_action_coords[0].r and ycoord + 1 == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord == place_action_coords[0].r and ycoord - 1 == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    else:
+                        continue
+        return place_action_coords
