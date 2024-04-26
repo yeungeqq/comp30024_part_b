@@ -199,10 +199,12 @@ class Agent:
         action_list = []
         for move in moves:
             if color == PlayerColor.RED:
+                # need to eliminate lines
                 score, action = self.minimax(self, color, red[:].append(move), blue)
                 score_list.append(score)
                 action_list.append(action)
             if color == PlayerColor.BLUE:
+                # need to eliminate lines
                 score, action = self.minimax(self, color, red, blue[:].append(move))
                 score_list.append(score)
                 action_list.append(action)
@@ -277,6 +279,6 @@ def eliminate_lines(red, blue):
     for coord in eliminated_coords_list:
         if coord in red: red.remove(coord)
         if coord in blue: blue.remove(coord)
-        block.remove(coord)
+        if coord in block: block.remove(coord)
 
     return red, blue
