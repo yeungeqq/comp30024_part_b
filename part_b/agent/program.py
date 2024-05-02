@@ -242,7 +242,7 @@ class Agent:
                     break
                 beta = min(beta, value)
         
-        return score, best_movement
+        return value, best_movement
     
     def random_move(self, color, red, blue, move_count):
         # Randomly select 4 adjacent blocks on the board that hasn't been placed yet
