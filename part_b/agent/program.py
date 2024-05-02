@@ -15,6 +15,8 @@ class Agent:
     place_action_list = []
     place_action_red = []
     place_action_blue = []
+    current_red = []
+    current_blue = []
     player_move_count = 0
 
     def __init__(self, color: PlayerColor, **referee: dict):
@@ -42,10 +44,18 @@ class Agent:
         match self._color:
             case PlayerColor.RED:
                 print("Testing: RED is playing a PLACE action")
-                if self.player_move_count == 0:
-                    place_action_coords = self.random_move()
-                    # random_move()
+                if self.player_move_count < 12:
+                    place_action_coords = self.random_move(PlayerColor.RED, self.current_red,
+                                                           self.current_blue, self.player_move_count)
+                    self.player_move_count+=1
                     return PlaceAction(
+                        place_action_coords[0], 
+                        place_action_coords[1], 
+                        place_action_coords[2], 
+                        place_action_coords[3]
+                    )
+                place_action_coords = self.minimax(True, self.current_red, self.current_blue)[1]
+                return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
                         place_action_coords[2], 
@@ -53,10 +63,18 @@ class Agent:
                     )
             case PlayerColor.BLUE:
                 print("Testing: BLUE is playing a PLACE action")
-                if self.player_move_count == 0:
-                    place_action_coords = self.random_move()
-                    # random_move()
+                if self.player_move_count < 12:
+                    place_action_coords = self.random_move(PlayerColor.BLUE, self.current_red,
+                                                           self.current_blue, self.player_move_count)
+                    self.player_move_count+=1
                     return PlaceAction(
+                        place_action_coords[0], 
+                        place_action_coords[1], 
+                        place_action_coords[2], 
+                        place_action_coords[3]
+                    )
+                place_action_coords = self.minimax(False, self.current_red, self.current_blue)[1]
+                return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
                         place_action_coords[2], 
@@ -83,16 +101,19 @@ class Agent:
         self.place_action_list.append(action)
         if color == PlayerColor.RED:
             self.place_action_red.append(action)
+            for block in list(place_action.coords):
+                self.current_red.append(block)
         else:
             self.place_action_blue.append(action)
+            for block in list(place_action.coords):
+                self.current_blue.append(block)
+
+        self.current_red, self.current_blue = self.eliminate_lines(self.current_red, self.current_blue)
 
         print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
-        print('\n')
-        print(self.place_action_list)
-        print('\n')
 
     # generate a list of possible moves and number of moves given the current state
-    def possible_moves(color: PlayerColor, red, blue, goal_check):
+    def possible_moves(self, color: PlayerColor, red, blue):
         not_expandable_block = red[:] + blue[:]
 
         blocks = red
@@ -119,8 +140,6 @@ class Agent:
                 actions.append(temp_list)
         # return None if no empty adjacent block
         if len(actions) == 0:
-            # return true if performing goal check
-            if goal_check: return True
             return None
         # keep adding adjacent red blocks until it is long enough (4 blocks) to form a place action
         while len(actions[0]) < 4:
@@ -135,9 +154,6 @@ class Agent:
                             duplicate = True
                             break
                     if not duplicate:
-                        # return false when it is checking if the terminal state is reached
-                        if (goal_check & len(clone) == 4): return False
-                        # if not checking terminal state, proceed to append actions
                         actions.append(clone)
                 if (block.down(1) not in not_expandable_block and block.down(1) not in list(possible_move)):
                     clone = list(possible_move)[:]
@@ -148,7 +164,6 @@ class Agent:
                             duplicate = True
                             break
                     if not duplicate:
-                        if (goal_check & len(clone) == 4): return False
                         actions.append(clone)
                 if (block.left(1) not in not_expandable_block and block.left(1) not in list(possible_move)):
                     clone = list(possible_move)[:]
@@ -159,7 +174,6 @@ class Agent:
                             duplicate = True
                             break
                     if not duplicate:
-                        if (goal_check & len(clone) == 4): return False
                         actions.append(clone)
                 if (block.right(1) not in not_expandable_block and block.right(1) not in list(possible_move)):
                     clone = list(possible_move)[:]
@@ -170,115 +184,155 @@ class Agent:
                             duplicate = True
                             break
                     if not duplicate:
-                        if (goal_check & len(clone) == 4): return False
                         actions.append(clone)
-        if (goal_check & len(actions) == 0): return True
+            if len(actions) == 0: return None
         return actions
 
     # calculate utility of a possible move
     def utility(self, color: PlayerColor, red, blue):
+        if self.possible_moves(color, red, blue) == None: 
         # no possible move for red -> blue win, score = -1
-        if color == PlayerColor.RED:
-            if self.possible_moves(color, red, blue, True): return -1
+            if color == PlayerColor.RED:
+                return -1
         # no possible move for blue -> red win, score = 1
-        elif color == PlayerColor.BLUE:
-            if self.possible_moves(PlayerColor.BLUE, red, blue, True): return 1
+            else:
+                return 1
         else:
             return 0
     
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
-    def minimax(self, color: PlayerColor, red, blue):
+    def minimax(self, maximizing, red, blue, alpha=float('-inf'), beta=float('inf')):
         # generate possible moves for given state (red and blue)
-        moves =  self.possible_moves(color, red, blue, False)
-        # if no possible move, return the utility and the move
-        if moves is None: return [self.utility(self, color, red, blue), None]
+        # if no possible move, return the utility
+        if maximizing:
+            moves = self.possible_moves(PlayerColor.RED, red, blue)            
+            if moves is None:
+                return self.utility(PlayerColor.RED, red, blue), None
+        else:
+            moves = self.possible_moves(PlayerColor.BLUE, red, blue)
+            if moves is None:
+                return self.utility(PlayerColor.BLUE, red, blue), None
 
         # loop through the possible moves and search till the end of the tree
-        score_list = []
-        action_list = []
-        for move in moves:
-            if color == PlayerColor.RED:
-                # need to eliminate lines
-                score, action = self.minimax(self, color, red[:].append(move), blue)
-                score_list.append(score)
-                action_list.append(action)
-            if color == PlayerColor.BLUE:
-                # need to eliminate lines
-                score, action = self.minimax(self, color, red, blue[:].append(move))
-                score_list.append(score)
-                action_list.append(action)
-        
-        if color == PlayerColor.RED:
-            score = max(score_list)
-            action = action_list[score_list.index(max(score_list))]
-            return score, action
+        if maximizing:
+            value = float('-inf')
+            best_movement = None
+            for move in moves:
+                # eliminate lines if there are filled lines
+                # new_red, new_blue = self.eliminate_lines(red[:]+move, blue)
+                score = self.minimax(False, red[:]+move, blue)[0]
+                if score > value:
+                    value = score
+                    best_movement = move
+                if value >= beta:
+                    break
+                alpha = max(alpha, value)
         else:
-            score = min(score_list)
-            action = action_list[score_list.index(min(score_list))]
-            return score, action
+            value = float('inf')
+            best_movement = None
+            for move in moves:
+                # eliminate lines if there are filled lines
+                # new_red, new_blue = self.eliminate_lines(red, blue[:]+move)
+                score = self.minimax(True, red, blue[:]+move)[0]
+                if score < value:
+                    value = score
+                    best_movement = move
+                if value <= alpha:
+                    break
+                beta = min(beta, value)
+        
+        return score, best_movement
     
-    def random_move(self):
+    def random_move(self, color, red, blue, move_count):
         # Randomly select 4 adjacent blocks on the board that hasn't been placed yet
         # Check whether the randomly selected blocks have been placed in the game board
         place_action_coords = []
-        while len(place_action_coords) < 4:
-            xcoord = random.randint(0, 10)
-            ycoord = random.randint(0, 10)
-            for place_action_piece in self.place_action_list:
-                for coord in place_action_piece.coords:
-                    if Coord(xcoord, ycoord) == coord:
-                        continue
-            if len(place_action_coords) == 0:
-                if Coord(xcoord, ycoord) not in place_action_coords:
-                    place_action_coords.append(Coord(xcoord, ycoord))
-            else:
-                if Coord(xcoord, ycoord) not in place_action_coords:
-                    if xcoord + 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+        if move_count == 0:
+            while len(place_action_coords) < 4:
+                xcoord = random.randint(0, 10)
+                ycoord = random.randint(0, 10)
+                for place_action_piece in self.place_action_list:
+                    for coord in place_action_piece.coords:
+                        if Coord(xcoord, ycoord) == coord:
+                            continue
+                if len(place_action_coords) == 0:
+                    if Coord(xcoord, ycoord) not in place_action_coords:
                         place_action_coords.append(Coord(xcoord, ycoord))
-                    elif xcoord - 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    elif xcoord == place_action_coords[0].r and ycoord + 1 == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    elif xcoord == place_action_coords[0].r and ycoord - 1 == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    else:
-                        continue
+                else:
+                    if Coord(xcoord, ycoord) not in place_action_coords:
+                        if xcoord + 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord - 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord == place_action_coords[0].r and ycoord + 1 == place_action_coords[0].c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord == place_action_coords[0].r and ycoord - 1 == place_action_coords[0].c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        else:
+                            continue
+        else:
+            place_action_coords = random.choice(self.possible_moves(color, red, blue))
         return place_action_coords
 
-def eliminate_lines(red, blue):
 
-    red = red[:]
-    blue = blue[:]
-    block = red + blue
-    eliminated_coords_list = []
+    def eliminate_lines(self, red, blue):
+        red_clone = red[:]
+        blue_clone = blue[:]
+        block = red_clone + blue_clone
+        eliminated_coords_list = []
+        # check if there are any completed rows. If there are, add these coords to the eliminated_coords_list.
+        for i in range(11):
+            row = []
+            for j in range(11):
+                row.append(Coord(i, j))
+            if set(row).issubset(set(block)):
+                for coord in row:
+                    eliminated_coords_list.append(coord)
+        # check if there are any completed columns. If there are, add these coords to the eliminated_coords_list.
+        for i in range(11):
+            column = []
+            for j in range(11):
+                column.append(Coord(j, i))
+            if set(column).issubset(set(block)):
+                for coord in column:
+                    eliminated_coords_list.append(coord)
+        # Go through the eliminated_coords_list and remove all the non-expandable blocks that are a part of 
+        # any complete rows or columns.
+        for coord in eliminated_coords_list:
+            if coord in red_clone: red_clone.remove(coord)
+            if coord in blue_clone: blue_clone.remove(coord)
+            if coord in block: block.remove(coord)
 
-    # check if there are any completed rows. If there are, add these coords to the eliminated_coords_list.
-
-    for i in range(11):
-        row = []
-        for j in range(11):
-            row.append(Coord(i, j))
-        if set(row).issubset(set(block)):
-            for coord in row:
-                eliminated_coords_list.append(coord)
-
-    # check if there are any completed columns. If there are, add these coords to the eliminated_coords_list.
-
-    for i in range(11):
-        column = []
-        for j in range(11):
-            column.append(Coord(j, i))
-        if set(column).issubset(set(block)):
-            for coord in column:
-                eliminated_coords_list.append(coord)
+        return red_clone, blue_clone
     
-    # Go through the eliminated_coords_list and remove all the non-expandable blocks that are a part of 
-    # any complete rows or columns.
+    """
+    def eliminate_lines(self,red, blue):
+        # check if there are any completed rows. If there are, remove the non-expandable blocks that are part of the completed row
+        red = red[:]
+        blue = blue[:]
+        block = red + blue
 
-    for coord in eliminated_coords_list:
-        if coord in red: red.remove(coord)
-        if coord in blue: blue.remove(coord)
-        if coord in block: block.remove(coord)
-
-    return red, blue
+        for i in range(11):
+            row = []
+            for j in range(11):
+                row.append(Coord(i, j))
+            if set(row).issubset(set(block)):
+                for coord in row:
+                    if coord in red: red.remove(coord)
+                    if coord in blue: blue.remove(coord)
+                    block.remove(coord)
+        # check if there are any completed columns. If there are, remove the non-expandable blocks
+        # that are part of the completed column
+        for i in range(11):
+            column = []
+            for j in range(11):
+                column.append(Coord(j, i))
+            if set(column).issubset(set(block)):
+                for coord in column:
+                    if coord in red: red.remove(coord)
+                    if coord in blue: blue.remove(coord)
+                    block.remove(coord)
+            
+        return red, blue
+    """
