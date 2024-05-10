@@ -195,30 +195,41 @@ class Agent:
         possible_moves = self.possible_moves(color, red, blue)
         # compute the possible moves which eliminating lines and avoid opponent to be able to eliminate lines
         elimination_pen = 0
+        empt_adj = 0
+        if (len(red) + len(blue)) >= 80:
+            for i in range (11):
+                for j in range(11):
+                    if Coord(i, j) not in red and Coord(i, j) not in blue:
+                        if Coord(i, j).up(1) not in red and Coord(i, j).up(1) not in blue:
+                            empt_adj+=1
+                        if Coord(i, j).down(1) not in red and Coord(i, j).down(1) not in blue:
+                            empt_adj+=1
+                        if Coord(i, j).left(1) not in red and Coord(i, j).left(1) not in blue:
+                            empt_adj+=1
+                        if Coord(i, j).right(1) not in red and Coord(i, j).right(1) not in blue:
+                            empt_adj+=1
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
             if possible_moves == None: return float('-inf')
-            if (len(red) + len(blue)) >= 80:
-                potential_opponent_moves = self.possible_moves(PlayerColor.BLUE, red, blue)
-                if potential_opponent_moves != None:
-                    for move in potential_opponent_moves:
-                        new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
-                        if elimiated:
-                            elimination_pen = 100
-                            break
-            score = len(red) - len(blue) + len(possible_moves) - elimination_pen
+            """potential_opponent_moves = self.possible_moves(PlayerColor.BLUE, red, blue)
+            if potential_opponent_moves != None:
+                for move in potential_opponent_moves:
+                    new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
+                    if elimiated:
+                        elimination_pen = 500
+                        break"""
+            score = len(red) - len(blue) + len(possible_moves) + empt_adj - elimination_pen
         else:
             # no possible move for blue -> red win, score = inf
             if possible_moves == None: return float('inf')
-            if (len(red) + len(blue)) >= 80:
-                potential_opponent_moves = self.possible_moves(PlayerColor.RED, red, blue)
-                if potential_opponent_moves != None:
-                    for move in potential_opponent_moves:
-                        new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
-                        if elimiated:
-                            elimination_pen = 100
-                            break
-            score = len(red) - len(blue) - len(possible_moves) + elimination_pen
+            """potential_opponent_moves = self.possible_moves(PlayerColor.RED, red, blue)
+            if potential_opponent_moves != None:
+                for move in potential_opponent_moves:
+                    new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
+                    if elimiated:
+                        elimination_pen = 500
+                        break"""
+            score = len(red) - len(blue) - len(possible_moves) - empt_adj + elimination_pen
         return score
 
     
