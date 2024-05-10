@@ -56,7 +56,8 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue)[1]
+                value, place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue)
+                print(f"Utility score of the move: {value}")
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -75,7 +76,8 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue)[1]
+                value, place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue)
+                print(f"Utility score of the move: {value}")
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -240,13 +242,12 @@ class Agent:
         # if no possible move, return the utility
         if maximizing:
             moves = self.possible_moves(PlayerColor.RED, red, blue) 
-            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 4) and depth != MAX_DEPTH) or depth == 0:
+            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 2) and depth != MAX_DEPTH) or depth == 0:
                 return self.utility(PlayerColor.RED, red, blue), None
         else:
             moves = self.possible_moves(PlayerColor.BLUE, red, blue)
-            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 4) and depth != MAX_DEPTH) or depth == 0:
+            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 2) and depth != MAX_DEPTH) or depth == 0:
                 return self.utility(PlayerColor.BLUE, red, blue), None
-        print(f"Current Depth: {depth} | The number of possible move is {len(moves)}")
 
         # loop through the possible moves and search till the end of the tree
         if maximizing:
@@ -265,6 +266,7 @@ class Agent:
                     break
                 alpha = max(alpha, value)
                 if move_counts > MAX_MOVES: break
+            if (depth == MAX_DEPTH and value == float('-inf')): best_movement = random.choice(moves)
         else:
             value = float('inf')
             best_movement = None
@@ -281,6 +283,7 @@ class Agent:
                     break
                 beta = min(beta, value)
                 if move_counts > MAX_MOVES: break
+            if (depth == MAX_DEPTH and value == float('inf')): best_movement = random.choice(moves)
         return value, best_movement
     
     def random_move(self, color, red, blue, move_count):
@@ -345,34 +348,3 @@ class Agent:
             if coord in block: block.remove(coord)
         if len(eliminated_coords_list) > 0 : elimiated = True
         return red_clone, blue_clone, elimiated
-    
-    """
-    def eliminate_lines(self,red, blue):
-        # check if there are any completed rows. If there are, remove the non-expandable blocks that are part of the completed row
-        red = red[:]
-        blue = blue[:]
-        block = red + blue
-
-        for i in range(11):
-            row = []
-            for j in range(11):
-                row.append(Coord(i, j))
-            if set(row).issubset(set(block)):
-                for coord in row:
-                    if coord in red: red.remove(coord)
-                    if coord in blue: blue.remove(coord)
-                    block.remove(coord)
-        # check if there are any completed columns. If there are, remove the non-expandable blocks
-        # that are part of the completed column
-        for i in range(11):
-            column = []
-            for j in range(11):
-                column.append(Coord(j, i))
-            if set(column).issubset(set(block)):
-                for coord in column:
-                    if coord in red: red.remove(coord)
-                    if coord in blue: blue.remove(coord)
-                    block.remove(coord)
-            
-        return red, blue
-    """
