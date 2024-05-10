@@ -114,8 +114,6 @@ class Agent:
 
         self.current_red, self.current_blue, _ = self.eliminate_lines(self.current_red, self.current_blue)
 
-        print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
-
     # generate a list of possible moves and number of moves given the current state
     def possible_moves(self, color: PlayerColor, red, blue):
         not_expandable_block = red[:] + blue[:]
@@ -213,25 +211,11 @@ class Agent:
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
             if possible_moves == None: return float('-inf')
-            """potential_opponent_moves = self.possible_moves(PlayerColor.BLUE, red, blue)
-            if potential_opponent_moves != None:
-                for move in potential_opponent_moves:
-                    new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
-                    if elimiated:
-                        elimination_pen = 500
-                        break"""
-            score = len(red) - len(blue) + len(possible_moves) + empt_adj - elimination_pen
+            score = len(red) - len(blue) + len(possible_moves) + empt_adj
         else:
             # no possible move for blue -> red win, score = inf
             if possible_moves == None: return float('inf')
-            """potential_opponent_moves = self.possible_moves(PlayerColor.RED, red, blue)
-            if potential_opponent_moves != None:
-                for move in potential_opponent_moves:
-                    new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
-                    if elimiated:
-                        elimination_pen = 500
-                        break"""
-            score = len(red) - len(blue) - len(possible_moves) - empt_adj + elimination_pen
+            score = len(red) - len(blue) - len(possible_moves) - empt_adj
         return score
 
     
