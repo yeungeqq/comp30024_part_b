@@ -4,6 +4,8 @@
 import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
+MAX_MOVES = 32
+MAX_DEPTH = 4
 
 class Agent:
     """
@@ -44,7 +46,7 @@ class Agent:
         match self._color:
             case PlayerColor.RED:
                 print("Testing: RED is playing a PLACE action")
-                if self.player_move_count < 12:
+                if self.player_move_count == 0:
                     place_action_coords = self.random_move(PlayerColor.RED, self.current_red,
                                                            self.current_blue, self.player_move_count)
                     self.player_move_count+=1
@@ -54,7 +56,7 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                place_action_coords = self.minimax(True, self.current_red, self.current_blue)[1]
+                place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue)[1]
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -63,7 +65,7 @@ class Agent:
                     )
             case PlayerColor.BLUE:
                 print("Testing: BLUE is playing a PLACE action")
-                if self.player_move_count < 12:
+                if self.player_move_count == 0:
                     place_action_coords = self.random_move(PlayerColor.BLUE, self.current_red,
                                                            self.current_blue, self.player_move_count)
                     self.player_move_count+=1
@@ -73,7 +75,7 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                place_action_coords = self.minimax(False, self.current_red, self.current_blue)[1]
+                place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue)[1]
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -108,7 +110,7 @@ class Agent:
             for block in list(place_action.coords):
                 self.current_blue.append(block)
 
-        self.current_red, self.current_blue = self.eliminate_lines(self.current_red, self.current_blue)
+        self.current_red, self.current_blue, _ = self.eliminate_lines(self.current_red, self.current_blue)
 
         print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
 
@@ -190,58 +192,84 @@ class Agent:
 
     # calculate utility of a possible move
     def utility(self, color: PlayerColor, red, blue):
-        if self.possible_moves(color, red, blue) == None: 
-        # no possible move for red -> blue win, score = -1
-            if color == PlayerColor.RED:
-                return -1
-        # no possible move for blue -> red win, score = 1
-            else:
-                return 1
+        possible_moves = self.possible_moves(color, red, blue)
+        # compute the possible moves which eliminating lines and avoid opponent to be able to eliminate lines
+        elimination_pen = 0
+        if color == PlayerColor.RED:
+            # no possible move for red -> blue win, score = -inf
+            if possible_moves == None: return float('-inf')
+            if (len(red) + len(blue)) >= 80:
+                potential_opponent_moves = self.possible_moves(PlayerColor.BLUE, red, blue)
+                if potential_opponent_moves != None:
+                    for move in potential_opponent_moves:
+                        new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
+                        if elimiated:
+                            elimination_pen = 100
+                            break
+            score = len(red) - len(blue) + len(possible_moves) - elimination_pen
         else:
-            return 0
+            # no possible move for blue -> red win, score = inf
+            if possible_moves == None: return float('inf')
+            if (len(red) + len(blue)) >= 80:
+                potential_opponent_moves = self.possible_moves(PlayerColor.RED, red, blue)
+                if potential_opponent_moves != None:
+                    for move in potential_opponent_moves:
+                        new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
+                        if elimiated:
+                            elimination_pen = 100
+                            break
+            score = len(red) - len(blue) - len(possible_moves) + elimination_pen
+        return score
+
     
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
-    def minimax(self, maximizing, red, blue, alpha=float('-inf'), beta=float('inf')):
+    def minimax(self, maximizing, depth, red, blue, alpha=float('-inf'), beta=float('inf')):
         # generate possible moves for given state (red and blue)
         # if no possible move, return the utility
         if maximizing:
-            moves = self.possible_moves(PlayerColor.RED, red, blue)            
-            if moves is None:
+            moves = self.possible_moves(PlayerColor.RED, red, blue) 
+            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 4) and depth != MAX_DEPTH) or depth == 0:
                 return self.utility(PlayerColor.RED, red, blue), None
         else:
             moves = self.possible_moves(PlayerColor.BLUE, red, blue)
-            if moves is None:
+            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 4) and depth != MAX_DEPTH) or depth == 0:
                 return self.utility(PlayerColor.BLUE, red, blue), None
+        print(f"Current Depth: {depth} | The number of possible move is {len(moves)}")
 
         # loop through the possible moves and search till the end of the tree
         if maximizing:
             value = float('-inf')
             best_movement = None
+            move_counts = 0
             for move in moves:
+                move_counts+=1
                 # eliminate lines if there are filled lines
-                # new_red, new_blue = self.eliminate_lines(red[:]+move, blue)
-                score = self.minimax(False, red[:]+move, blue)[0]
+                new_red, new_blue, _ = self.eliminate_lines(red[:]+move, blue)
+                score = self.minimax(False, depth - 1, new_red, new_blue)[0]
                 if score > value:
                     value = score
                     best_movement = move
                 if value >= beta:
                     break
                 alpha = max(alpha, value)
+                if move_counts > MAX_MOVES: break
         else:
             value = float('inf')
             best_movement = None
+            move_counts = 0
             for move in moves:
+                move_counts+=1
                 # eliminate lines if there are filled lines
-                # new_red, new_blue = self.eliminate_lines(red, blue[:]+move)
-                score = self.minimax(True, red, blue[:]+move)[0]
+                new_red, new_blue, _ = self.eliminate_lines(red, blue[:]+move)
+                score = self.minimax(True, depth - 1, new_red, new_blue)[0]
                 if score < value:
                     value = score
                     best_movement = move
                 if value <= alpha:
                     break
                 beta = min(beta, value)
-        
+                if move_counts > MAX_MOVES: break
         return value, best_movement
     
     def random_move(self, color, red, blue, move_count):
@@ -277,6 +305,7 @@ class Agent:
 
 
     def eliminate_lines(self, red, blue):
+        elimiated = False
         red_clone = red[:]
         blue_clone = blue[:]
         block = red_clone + blue_clone
@@ -303,8 +332,8 @@ class Agent:
             if coord in red_clone: red_clone.remove(coord)
             if coord in blue_clone: blue_clone.remove(coord)
             if coord in block: block.remove(coord)
-
-        return red_clone, blue_clone
+        if len(eliminated_coords_list) > 0 : elimiated = True
+        return red_clone, blue_clone, elimiated
     
     """
     def eliminate_lines(self,red, blue):
