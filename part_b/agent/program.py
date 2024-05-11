@@ -272,7 +272,9 @@ class Agent:
         # Check whether the randomly selected blocks have been placed in the game board
         place_action_coords = []
 
-        action_arr = self.place_action_red if color == PlayerColor.RED else self.place_action_blue
+        all_curr_coords = red + blue
+
+        action_arr = red if color == PlayerColor.RED else blue
 
         coord_loop_count = 0
 
@@ -297,50 +299,36 @@ class Agent:
             if down == -1: down = 10
             
             # Check if the coord has been placed on the board
-            for place_action_piece in self.place_action_list:
-                for coord in place_action_piece.coords:
-                    if Coord(xcoord, ycoord) == coord:
-                        coord_already_placed = True
-                        break
-                if coord_already_placed:
+            for coord in all_curr_coords:
+                if Coord(xcoord, ycoord) == coord:
+                    coord_already_placed = True
                     break
             if coord_already_placed:
                 continue
+
             # If this is the first move of the game and no coord has been chosen
             # then add the coord to the place_action_coords list
             if len(place_action_coords) == 0 and move_count == 0:
                 if Coord(xcoord, ycoord) not in place_action_coords:
                     place_action_coords.append(Coord(xcoord, ycoord))
+            
             # If this is not the first move of the game and no coord has been chosen
             # then check if the coord is adjacent to any of the coords that has been
             # chosen before by the player. If it is, add the coord to the place_action_coords list
             elif len(place_action_coords) == 0 and move_count != 0:
                 if Coord(xcoord, ycoord) not in place_action_coords:
 
-                    coord_chosen = False
-
-                    for action in action_arr:
-                        for coord in action.coords:
-                            if right == coord.r and ycoord == coord.c:
-                                place_action_coords.append(Coord(xcoord, ycoord))
-                                coord_chosen = True
-                                break
-                            elif left == coord.r and ycoord == coord.c:
-                                place_action_coords.append(Coord(xcoord, ycoord))
-                                coord_chosen = True
-                                break
-                            elif xcoord == coord.r and up == coord.c:
-                                place_action_coords.append(Coord(xcoord, ycoord))
-                                coord_chosen = True
-                                break
-                            elif xcoord == coord.r and down == coord.c:
-                                place_action_coords.append(Coord(xcoord, ycoord))
-                                coord_chosen = True
-                                break
-                            else:
-                                continue
-                        if coord_chosen:
-                            break
+                    for coord in action_arr:
+                        if right == coord.r and ycoord == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif left == coord.r and ycoord == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord == coord.r and up == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord == coord.r and down == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        else:
+                            continue
 
             # If this is not the first move of the game and some coords have been chosen
             # then check if the coord is adjacent to any of the coords that has been
