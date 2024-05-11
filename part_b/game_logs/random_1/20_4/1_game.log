@@ -1,0 +1,72 @@
+T0000.001	referee	game_begin
+T0000.012	RED	initialising
+T0001.536	BLUE	initialising
+T0003.685	RED	turn_begin	1
+T0003.766	RED	turn_end	1	PLACE(1-4, 0-4, 0-3, 0-2)
+T0003.777	referee	board_update
+T0004.104	BLUE	turn_begin	2
+T0004.153	BLUE	turn_end	2	PLACE(4-5, 4-6, 5-5, 6-5)
+T0004.163	referee	board_update
+T0004.322	RED	turn_begin	3
+T0040.128	RED	turn_end	3	PLACE(10-2, 9-2, 9-3, 8-3)
+T0040.130	referee	board_update
+T0040.227	BLUE	turn_begin	4
+T0040.251	BLUE	turn_end	4	PLACE(5-6, 5-7, 5-8, 6-7)
+T0040.252	referee	board_update
+T0040.328	RED	turn_begin	5
+T0095.175	RED	turn_end	5	PLACE(1-2, 2-2, 2-3, 3-3)
+T0095.187	referee	board_update
+T0095.283	BLUE	turn_begin	6
+T0095.349	BLUE	turn_end	6	PLACE(6-4, 5-4, 5-3, 4-3)
+T0095.355	referee	board_update
+T0095.453	RED	turn_begin	7
+T0157.280	RED	turn_end	7	PLACE(0-1, 1-1, 2-1, 3-1)
+T0157.286	referee	board_update
+T0157.455	BLUE	turn_begin	8
+T0157.511	BLUE	turn_end	8	PLACE(4-2, 4-1, 3-2, 5-2)
+T0157.516	referee	board_update
+T0157.646	RED	turn_begin	9
+T0232.521	RED	turn_end	9	PLACE(10-4, 9-4, 8-4, 8-5)
+T0232.528	referee	board_update
+T0232.657	BLUE	turn_begin	10
+T0232.740	BLUE	turn_end	10	PLACE(7-7, 8-7, 8-8, 9-8)
+T0232.746	referee	board_update
+T0232.903	RED	turn_begin	11
+T0313.494	RED	turn_end	11	PLACE(0-5, 10-5, 10-6, 10-7)
+T0313.509	referee	board_update
+T0313.604	BLUE	turn_begin	12
+T0313.690	BLUE	turn_end	12	PLACE(6-2, 6-1, 5-1, 7-2)
+T0313.718	referee	board_update
+T0313.898	RED	turn_begin	13
+T0363.790	RED	turn_end	13	PLACE(2-4, 2-5, 2-6, 3-6)
+T0363.794	referee	board_update
+T0363.866	BLUE	turn_begin	14
+T0364.005	BLUE	turn_end	14	PLACE(6-6, 7-6, 8-6, 9-6)
+T0364.009	referee	board_update
+T0364.122	RED	turn_begin	15
+T0407.972	RED	turn_end	15	PLACE(9-1, 8-1, 9-0, 8-0)
+T0408.018	referee	board_update
+T0408.118	BLUE	turn_begin	16
+T0409.339	BLUE	turn_end	16	PLACE(6-0, 5-0, 4-0, 5-10)
+T0409.350	referee	board_update
+T0409.469	RED	turn_begin	17
+T0433.215	RED	turn_end	17	PLACE(10-1, 10-0, 10-10, 10-9)
+T0433.218	referee	board_update
+T0433.281	BLUE	turn_begin	18
+T0433.390	BLUE	turn_end	18	PLACE(9-9, 8-9, 9-10, 8-10)
+T0433.392	referee	board_update
+T0433.447	RED	turn_begin	19
+T0448.322	RED	turn_end	19	PLACE(3-0, 2-0, 3-10, 1-0)
+T0448.329	referee	board_update
+T0448.447	BLUE	turn_begin	20
+T0448.550	BLUE	turn_end	20	PLACE(7-9, 6-9, 7-8, 7-10)
+T0448.552	referee	board_update
+T0448.636	RED	turn_begin	21
+T0455.249	RED	turn_end	21	PLACE(0-6, 0-7, 0-8, 1-8)
+T0455.252	referee	board_update
+T0455.313	BLUE	turn_begin	22
+T0455.417	BLUE	turn_end	22	PLACE(4-10, 4-9, 5-9, 3-9)
+T0455.457	referee	board_update
+T0455.591	RED	turn_begin	23
+T0463.686	referee	player_error	ERROR: exceeded available time in player 1 [agent:Agent] agent
+T0463.690	referee	game_end	winner:BLUE

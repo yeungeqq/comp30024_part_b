@@ -1,0 +1,54 @@
+T0000.007	referee	game_begin
+T0000.035	RED	initialising
+T0001.253	BLUE	initialising
+T0002.904	RED	turn_begin	1
+T0002.944	RED	turn_end	1	PLACE(6-7, 5-7, 4-7, 5-6)
+T0002.950	referee	board_update
+T0003.077	BLUE	turn_begin	2
+T0003.213	BLUE	turn_end	2	PLACE(10-4, 10-3, 0-3, 10-5)
+T0003.224	referee	board_update
+T0003.423	RED	turn_begin	3
+T0024.379	RED	turn_end	3	PLACE(7-7, 8-7, 8-6, 9-6)
+T0024.382	referee	board_update
+T0024.500	BLUE	turn_begin	4
+T0024.548	BLUE	turn_end	4	PLACE(0-2, 10-2, 0-1, 0-0)
+T0024.557	referee	board_update
+T0024.670	RED	turn_begin	5
+T0070.919	RED	turn_end	5	PLACE(6-6, 6-5, 7-5, 7-4)
+T0070.922	referee	board_update
+T0070.997	BLUE	turn_begin	6
+T0071.029	BLUE	turn_end	6	PLACE(0-10, 0-9, 10-9, 1-10)
+T0071.041	referee	board_update
+T0071.113	RED	turn_begin	7
+T0150.692	RED	turn_end	7	PLACE(6-8, 7-8, 6-9, 8-8)
+T0150.711	referee	board_update
+T0150.899	BLUE	turn_begin	8
+T0151.037	BLUE	turn_end	8	PLACE(10-10, 10-0, 9-0, 9-10)
+T0151.044	referee	board_update
+T0151.175	RED	turn_begin	9
+T0248.462	RED	turn_end	9	PLACE(4-6, 3-6, 2-6, 1-6)
+T0248.468	referee	board_update
+T0248.666	BLUE	turn_begin	10
+T0248.791	BLUE	turn_end	10	PLACE(1-9, 2-9, 2-8, 3-9)
+T0248.826	referee	board_update
+T0248.955	RED	turn_begin	11
+T0322.827	RED	turn_end	11	PLACE(5-5, 4-5, 3-5, 2-5)
+T0322.831	referee	board_update
+T0322.934	BLUE	turn_begin	12
+T0323.017	BLUE	turn_end	12	PLACE(2-10, 3-10, 4-10, 5-10)
+T0323.021	referee	board_update
+T0323.132	RED	turn_begin	13
+T0393.136	RED	turn_end	13	PLACE(9-7, 10-7, 0-7, 0-6)
+T0393.139	referee	board_update
+T0393.215	BLUE	turn_begin	14
+T0393.270	BLUE	turn_end	14	PLACE(8-0, 7-0, 8-1, 8-2)
+T0393.276	referee	board_update
+T0393.415	RED	turn_begin	15
+T0435.248	RED	turn_end	15	PLACE(9-5, 9-4, 9-3, 8-3)
+T0435.251	referee	board_update
+T0435.403	BLUE	turn_begin	16
+T0435.629	BLUE	turn_end	16	PLACE(1-8, 0-8, 10-8, 9-8)
+T0435.631	referee	board_update
+T0435.727	RED	turn_begin	17
+T0466.844	referee	player_error	ERROR: exceeded available time in player 1 [agent:Agent] agent
+T0466.846	referee	game_end	winner:BLUE

@@ -1,0 +1,157 @@
+T0000.003	referee	game_begin
+T0000.027	RED	initialising
+T0000.977	BLUE	initialising
+T0002.125	RED	turn_begin	1
+T0002.251	RED	turn_end	1	PLACE(0-7, 0-8, 10-7, 1-7)
+T0002.268	referee	board_update
+T0002.477	BLUE	turn_begin	2
+T0002.551	BLUE	turn_end	2	PLACE(10-10, 0-10, 10-0, 0-0)
+T0002.559	referee	board_update
+T0002.640	RED	turn_begin	3
+T0009.862	RED	turn_end	3	PLACE(0-6, 10-6, 0-5, 0-4)
+T0009.870	referee	board_update
+T0009.952	BLUE	turn_begin	4
+T0009.995	BLUE	turn_end	4	PLACE(9-10, 9-0, 9-9, 8-0)
+T0009.997	referee	board_update
+T0010.063	RED	turn_begin	5
+T0021.701	RED	turn_end	5	PLACE(10-8, 9-8, 8-8, 8-9)
+T0021.714	referee	board_update
+T0021.782	BLUE	turn_begin	6
+T0021.841	BLUE	turn_end	6	PLACE(0-1, 1-1, 1-0, 2-1)
+T0021.843	referee	board_update
+T0021.943	RED	turn_begin	7
+T0042.838	RED	turn_end	7	PLACE(1-8, 2-8, 1-9, 1-10)
+T0042.855	referee	board_update
+T0042.982	BLUE	turn_begin	8
+T0043.074	BLUE	turn_end	8	PLACE(2-2, 3-2, 1-2, 1-3)
+T0043.076	referee	board_update
+T0043.198	RED	turn_begin	9
+T0064.001	RED	turn_end	9	PLACE(9-7, 8-7, 7-7, 7-8)
+T0064.011	referee	board_update
+T0064.136	BLUE	turn_begin	10
+T0064.240	BLUE	turn_end	10	PLACE(1-4, 2-4, 2-5, 1-5)
+T0064.251	referee	board_update
+T0064.390	RED	turn_begin	11
+T0082.484	RED	turn_end	11	PLACE(2-7, 3-7, 4-7, 3-6)
+T0082.486	referee	board_update
+T0082.590	BLUE	turn_begin	12
+T0082.676	BLUE	turn_end	12	PLACE(3-5, 3-4, 4-4, 5-4)
+T0082.682	referee	board_update
+T0082.752	RED	turn_begin	13
+T0104.525	RED	turn_end	13	PLACE(10-4, 9-4, 10-3, 10-2)
+T0104.530	referee	board_update
+T0104.696	BLUE	turn_begin	14
+T0104.775	BLUE	turn_end	14	PLACE(6-4, 7-4, 7-5, 7-6)
+T0104.786	referee	board_update
+T0104.954	RED	turn_begin	15
+T0127.914	RED	turn_end	15	PLACE(7-9, 6-9, 7-10, 6-10)
+T0127.918	referee	board_update
+T0127.988	BLUE	turn_begin	16
+T0128.040	BLUE	turn_end	16	PLACE(6-5, 6-6, 5-6, 5-7)
+T0128.042	referee	board_update
+T0128.154	RED	turn_begin	17
+T0147.116	RED	turn_end	17	PLACE(2-9, 3-9, 2-10, 4-9)
+T0147.123	referee	board_update
+T0147.273	BLUE	turn_begin	18
+T0147.884	BLUE	turn_end	18	PLACE(4-3, 3-3, 4-2, 5-3)
+T0147.886	referee	board_update
+T0148.000	RED	turn_begin	19
+T0160.718	RED	turn_end	19	PLACE(10-5, 9-5, 8-5, 8-6)
+T0160.720	referee	board_update
+T0160.817	BLUE	turn_begin	20
+T0160.875	BLUE	turn_end	20	PLACE(8-1, 7-1, 7-0, 6-1)
+T0160.888	referee	board_update
+T0160.989	RED	turn_begin	21
+T0167.621	RED	turn_end	21	PLACE(9-3, 8-3, 9-2, 7-3)
+T0167.627	referee	board_update
+T0167.701	BLUE	turn_begin	22
+T0167.794	BLUE	turn_end	22	PLACE(2-0, 3-0, 3-1, 4-0)
+T0167.802	referee	board_update
+T0167.942	RED	turn_begin	23
+T0169.655	RED	turn_end	23	PLACE(5-9, 5-8, 5-10, 5-0)
+T0169.666	referee	board_update
+T0169.788	BLUE	turn_begin	24
+T0174.347	BLUE	turn_end	24	PLACE(6-2, 5-2, 7-2, 8-2)
+T0174.350	referee	board_update
+T0174.425	RED	turn_begin	25
+T0175.582	RED	turn_end	25	PLACE(7-8, 7-7, 7-9, 7-10)
+T0175.594	referee	board_update
+T0175.690	BLUE	turn_begin	26
+T0175.736	BLUE	turn_end	26	PLACE(7-4, 7-5, 8-4, 7-6)
+T0175.743	referee	board_update
+T0175.818	RED	turn_begin	27
+T0179.176	RED	turn_end	27	PLACE(0-4, 1-4, 2-4, 3-4)
+T0179.180	referee	board_update
+T0179.283	BLUE	turn_begin	28
+T0179.415	BLUE	turn_end	28	PLACE(7-0, 6-0, 7-1, 7-2)
+T0179.424	referee	board_update
+T0179.521	RED	turn_begin	29
+T0183.802	RED	turn_end	29	PLACE(1-0, 2-0, 3-0, 4-0)
+T0183.834	referee	board_update
+T0183.914	BLUE	turn_begin	30
+T0183.990	BLUE	turn_end	30	PLACE(6-3, 7-3, 6-4, 7-4)
+T0183.992	referee	board_update
+T0184.067	RED	turn_begin	31
+T0185.900	RED	turn_end	31	PLACE(10-1, 9-1, 9-0, 8-0)
+T0185.904	referee	board_update
+T0186.009	BLUE	turn_begin	32
+T0186.132	BLUE	turn_end	32	PLACE(5-4, 5-5, 4-4, 4-5)
+T0186.141	referee	board_update
+T0186.266	RED	turn_begin	33
+T0189.206	RED	turn_end	33	PLACE(9-6, 9-5, 8-5, 8-4)
+T0189.217	referee	board_update
+T0189.359	BLUE	turn_begin	34
+T0189.454	BLUE	turn_end	34	PLACE(6-0, 7-0, 5-0, 5-1)
+T0189.456	referee	board_update
+T0189.561	RED	turn_begin	35
+T0195.721	RED	turn_end	35	PLACE(1-6, 2-6, 2-5, 3-5)
+T0195.724	referee	board_update
+T0195.848	BLUE	turn_begin	36
+T0195.922	BLUE	turn_end	36	PLACE(5-5, 4-5, 4-6, 6-5)
+T0195.931	referee	board_update
+T0196.049	RED	turn_begin	37
+T0200.523	RED	turn_end	37	PLACE(0-6, 10-6, 9-6, 8-6)
+T0200.749	referee	board_update
+T0201.216	BLUE	turn_begin	38
+T0202.380	BLUE	turn_end	38	PLACE(6-6, 7-6, 5-6, 5-7)
+T0202.516	referee	board_update
+T0203.071	RED	turn_begin	39
+T0208.179	RED	turn_end	39	PLACE(4-8, 5-8, 5-9, 5-10)
+T0208.181	referee	board_update
+T0208.319	BLUE	turn_begin	40
+T0208.407	BLUE	turn_end	40	PLACE(5-1, 4-1, 5-2, 5-3)
+T0208.411	referee	board_update
+T0208.489	RED	turn_begin	41
+T0215.053	RED	turn_end	41	PLACE(1-6, 1-5, 0-5, 10-5)
+T0215.055	referee	board_update
+T0215.168	BLUE	turn_begin	42
+T0215.365	BLUE	turn_end	42	PLACE(1-1, 0-1, 0-0, 10-0)
+T0215.371	referee	board_update
+T0228.990	RED	turn_begin	43
+T0232.504	RED	turn_end	43	PLACE(1-7, 1-6, 1-5, 1-4)
+T0232.509	referee	board_update
+T0232.581	BLUE	turn_begin	44
+T0232.649	BLUE	turn_end	44	PLACE(0-2, 0-3, 1-2, 1-3)
+T0232.655	referee	board_update
+T0232.745	RED	turn_begin	45
+T0241.623	RED	turn_end	45	PLACE(10-2, 9-2, 0-2, 1-2)
+T0241.632	referee	board_update
+T0241.984	BLUE	turn_begin	46
+T0242.956	BLUE	turn_end	46	PLACE(5-2, 5-1, 6-1, 5-0)
+T0242.964	referee	board_update
+T0243.178	RED	turn_begin	47
+T0253.636	RED	turn_end	47	PLACE(8-2, 7-2, 8-1, 9-1)
+T0253.651	referee	board_update
+T0253.817	BLUE	turn_begin	48
+T0255.800	BLUE	turn_end	48	PLACE(4-1, 4-2, 3-1, 2-1)
+T0255.820	referee	board_update
+T0256.132	RED	turn_begin	49
+T0258.412	RED	turn_end	49	PLACE(1-9, 1-10, 1-0, 1-1)
+T0258.417	referee	board_update
+T0258.570	BLUE	turn_begin	50
+T0258.715	BLUE	turn_end	50	PLACE(0-0, 1-0, 2-0, 3-0)
+T0258.721	referee	board_update
+T0258.907	RED	turn_begin	51
+T0263.800	RED	turn_end	51	PLACE(6-0, 5-0, 7-0, 8-0)
+T0263.815	referee	board_update
+T0264.582	referee	game_end	winner:RED
