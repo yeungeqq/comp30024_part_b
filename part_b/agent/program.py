@@ -5,7 +5,7 @@ import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 MAX_MOVES = 32
-MAX_DEPTH = 4
+MAX_DEPTH = 5
 
 class Agent:
     """
@@ -56,7 +56,8 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue)[1]
+                value, place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue, [], [])
+                # print(f"Utility score of the move: {value}")
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -75,7 +76,8 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue)[1]
+                value, place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue, [], [])
+                # print(f"Utility score of the move: {value}")
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -111,8 +113,6 @@ class Agent:
                 self.current_blue.append(block)
 
         self.current_red, self.current_blue, _ = self.eliminate_lines(self.current_red, self.current_blue)
-
-        print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
 
     # generate a list of possible moves and number of moves given the current state
     def possible_moves(self, color: PlayerColor, red, blue):
@@ -191,85 +191,80 @@ class Agent:
         return actions
 
     # calculate utility of a possible move
-    def utility(self, color: PlayerColor, red, blue):
-        possible_moves = self.possible_moves(color, red, blue)
-        # compute the possible moves which eliminating lines and avoid opponent to be able to eliminate lines
-        elimination_pen = 0
+    def utility(self, color: PlayerColor, new_red, new_blue, red, blue):
+
+        possible_moves = self.possible_moves(color, new_red, new_blue)
+        block_clear_reward = 0
+        possible_moves_reward = len(possible_moves) if possible_moves != None else 0
+        block_diff_reward = len(new_red) - len(new_blue)
+        if (len(red) + len(blue)) >= 80:
+            prev_new_difference = len(red) + len(blue) - (len(new_red) + len(new_blue))
+            block_clear_reward = prev_new_difference*1.5
+            block_diff_reward*=2
+            possible_moves_reward*=3
+
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
             if possible_moves == None: return float('-inf')
-            if (len(red) + len(blue)) >= 80:
-                potential_opponent_moves = self.possible_moves(PlayerColor.BLUE, red, blue)
-                if potential_opponent_moves != None:
-                    for move in potential_opponent_moves:
-                        new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
-                        if elimiated:
-                            elimination_pen = 100
-                            break
-            score = len(red) - len(blue) + len(possible_moves) - elimination_pen
+            score = block_diff_reward + possible_moves_reward + block_clear_reward
         else:
             # no possible move for blue -> red win, score = inf
             if possible_moves == None: return float('inf')
-            if (len(red) + len(blue)) >= 80:
-                potential_opponent_moves = self.possible_moves(PlayerColor.RED, red, blue)
-                if potential_opponent_moves != None:
-                    for move in potential_opponent_moves:
-                        new_red, new_blue, elimiated = self.eliminate_lines(red, blue[:]+move)
-                        if elimiated:
-                            elimination_pen = 100
-                            break
-            score = len(red) - len(blue) - len(possible_moves) + elimination_pen
+            score = block_diff_reward - possible_moves_reward - block_clear_reward
         return score
 
     
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
-    def minimax(self, maximizing, depth, red, blue, alpha=float('-inf'), beta=float('inf')):
+    def minimax(self, maximizing, depth, new_red, new_blue, red, blue, alpha=float('-inf'), beta=float('inf')):
         # generate possible moves for given state (red and blue)
         # if no possible move, return the utility
+        # extra_move_check = 0 if depth <= 1 else 2
+        move_check = MAX_MOVES/(2 ** (MAX_DEPTH - depth)) if depth != 1 else MAX_MOVES - 20
         if maximizing:
-            moves = self.possible_moves(PlayerColor.RED, red, blue) 
-            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 4) and depth != MAX_DEPTH) or depth == 0:
-                return self.utility(PlayerColor.RED, red, blue), None
+            moves = self.possible_moves(PlayerColor.RED, new_red, new_blue) 
+            if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
+                return self.utility(PlayerColor.RED, new_red, new_blue, red, blue), None
         else:
-            moves = self.possible_moves(PlayerColor.BLUE, red, blue)
-            if moves is None or (len(moves) > (MAX_MOVES/(2 ** (MAX_DEPTH - depth)) + 4) and depth != MAX_DEPTH) or depth == 0:
-                return self.utility(PlayerColor.BLUE, red, blue), None
-        print(f"Current Depth: {depth} | The number of possible move is {len(moves)}")
+            moves = self.possible_moves(PlayerColor.BLUE, new_red, new_blue)
+            if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
+                return self.utility(PlayerColor.BLUE, new_red, new_blue, red, blue), None
 
         # loop through the possible moves and search till the end of the tree
+        move_counts = 0
         if maximizing:
             value = float('-inf')
             best_movement = None
-            move_counts = 0
             for move in moves:
                 move_counts+=1
                 # eliminate lines if there are filled lines
-                new_red, new_blue, _ = self.eliminate_lines(red[:]+move, blue)
-                score = self.minimax(False, depth - 1, new_red, new_blue)[0]
-                if score > value:
+                new_red_, new_blue_, _ = self.eliminate_lines(new_red[:]+move, new_blue)
+                score = self.minimax(False, depth - 1, new_red_, new_blue_, new_red, new_blue)[0]
+                if score >= value:
                     value = score
                     best_movement = move
                 if value >= beta:
+                    # print(f"AB pruned on depth {depth} and move number {move_counts} for {PlayerColor.RED}")
                     break
                 alpha = max(alpha, value)
-                if move_counts > MAX_MOVES: break
+                if move_counts >= MAX_MOVES: break
         else:
             value = float('inf')
             best_movement = None
-            move_counts = 0
             for move in moves:
                 move_counts+=1
                 # eliminate lines if there are filled lines
-                new_red, new_blue, _ = self.eliminate_lines(red, blue[:]+move)
-                score = self.minimax(True, depth - 1, new_red, new_blue)[0]
-                if score < value:
+                new_red_, new_blue_, _ = self.eliminate_lines(new_red, new_blue[:]+move)
+                score = self.minimax(True, depth - 1, new_red_, new_blue_, new_red, new_blue)[0]
+                if score <= value:
                     value = score
                     best_movement = move
                 if value <= alpha:
+                    # print(f"AB pruned on depth {depth} and move number {move_counts} for {PlayerColor.BLUE}")
                     break
                 beta = min(beta, value)
-                if move_counts > MAX_MOVES: break
+                if move_counts >= MAX_MOVES: break
+        # if (depth <= 2): print(f"Current Depth: {depth} | Possible Moves: {len(moves)} | Move Checked: {move_counts}")
         return value, best_movement
     
     def random_move(self, color, red, blue, move_count):
@@ -338,34 +333,3 @@ class Agent:
             if coord in block: block.remove(coord)
         if len(eliminated_coords_list) > 0 : elimiated = True
         return red_clone, blue_clone, elimiated
-    
-    """
-    def eliminate_lines(self,red, blue):
-        # check if there are any completed rows. If there are, remove the non-expandable blocks that are part of the completed row
-        red = red[:]
-        blue = blue[:]
-        block = red + blue
-
-        for i in range(11):
-            row = []
-            for j in range(11):
-                row.append(Coord(i, j))
-            if set(row).issubset(set(block)):
-                for coord in row:
-                    if coord in red: red.remove(coord)
-                    if coord in blue: blue.remove(coord)
-                    block.remove(coord)
-        # check if there are any completed columns. If there are, remove the non-expandable blocks
-        # that are part of the completed column
-        for i in range(11):
-            column = []
-            for j in range(11):
-                column.append(Coord(j, i))
-            if set(column).issubset(set(block)):
-                for coord in column:
-                    if coord in red: red.remove(coord)
-                    if coord in blue: blue.remove(coord)
-                    block.remove(coord)
-            
-        return red, blue
-    """
