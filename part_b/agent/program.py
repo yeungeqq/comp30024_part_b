@@ -276,31 +276,35 @@ class Agent:
         # Randomly select 4 adjacent blocks on the board that hasn't been placed yet
         # Check whether the randomly selected blocks have been placed in the game board
         place_action_coords = []
-        if move_count == 0:
-            while len(place_action_coords) < 4:
-                xcoord = random.randint(0, 10)
-                ycoord = random.randint(0, 10)
-                for place_action_piece in self.place_action_list:
-                    for coord in place_action_piece.coords:
-                        if Coord(xcoord, ycoord) == coord:
-                            continue
-                if len(place_action_coords) == 0:
-                    if Coord(xcoord, ycoord) not in place_action_coords:
+        while len(place_action_coords) < 4:
+            coord_already_placed = False
+            xcoord = random.randint(0, 10)
+            ycoord = random.randint(0, 10)
+            for place_action_piece in self.place_action_list:
+                for coord in place_action_piece.coords:
+                    if Coord(xcoord, ycoord) == coord:
+                        coord_already_placed = True
+                        break
+                if coord_already_placed:
+                    break
+            if coord_already_placed:
+                continue
+            if len(place_action_coords) == 0:
+                if Coord(xcoord, ycoord) not in place_action_coords:
+                    place_action_coords.append(Coord(xcoord, ycoord))
+            else:
+                if Coord(xcoord, ycoord) not in place_action_coords:
+                    if xcoord + 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
                         place_action_coords.append(Coord(xcoord, ycoord))
-                else:
-                    if Coord(xcoord, ycoord) not in place_action_coords:
-                        if xcoord + 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
-                            place_action_coords.append(Coord(xcoord, ycoord))
-                        elif xcoord - 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
-                            place_action_coords.append(Coord(xcoord, ycoord))
-                        elif xcoord == place_action_coords[0].r and ycoord + 1 == place_action_coords[0].c:
-                            place_action_coords.append(Coord(xcoord, ycoord))
-                        elif xcoord == place_action_coords[0].r and ycoord - 1 == place_action_coords[0].c:
-                            place_action_coords.append(Coord(xcoord, ycoord))
-                        else:
-                            continue
-        else:
-            place_action_coords = random.choice(self.possible_moves(color, red, blue))
+                    elif xcoord - 1 == place_action_coords[0].r and ycoord == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord == place_action_coords[0].r and ycoord + 1 == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    elif xcoord == place_action_coords[0].r and ycoord - 1 == place_action_coords[0].c:
+                        place_action_coords.append(Coord(xcoord, ycoord))
+                    else:
+                        continue
+
         return place_action_coords
 
 
