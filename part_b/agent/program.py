@@ -197,11 +197,14 @@ class Agent:
         block_clear_reward = 0
         possible_moves_reward = len(possible_moves) if possible_moves != None else 0
         block_diff_reward = len(new_red) - len(new_blue)
-        if (len(red) + len(blue)) >= 80:
+        if (len(red) + len(blue)) >= 60:
             prev_new_difference = len(red) + len(blue) - (len(new_red) + len(new_blue))
-            block_clear_reward = prev_new_difference*2
+            block_clear_reward = prev_new_difference*3
             block_diff_reward*=3
             possible_moves_reward*=5
+        if (len(red) + len(blue)) >= 90:
+            block_diff_reward*=2
+            block_clear_reward*=3
 
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
@@ -220,7 +223,7 @@ class Agent:
         # generate possible moves for given state (red and blue)
         # if no possible move, return the utility
         # extra_move_check = 0 if depth <= 1 else 2
-        move_check = MAX_MOVES/(2 ** (MAX_DEPTH - depth)) if depth != 1 else MAX_MOVES - 20
+        move_check = MAX_MOVES/(2 ** (MAX_DEPTH - depth))
         if maximizing:
             moves = self.possible_moves(PlayerColor.RED, new_red, new_blue) 
             if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
