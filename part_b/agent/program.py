@@ -274,12 +274,31 @@ class Agent:
         # Randomly select 4 adjacent blocks on the board that hasn't been placed yet
         # Check whether the randomly selected blocks have been placed in the game board
         place_action_coords = []
+
+        action_arr = self.place_action_red if color == PlayerColor.RED else self.place_action_blue
+
+        coord_loop_count = 0
+
         while len(place_action_coords) < 4:
+
+            if coord_loop_count > 500:
+                place_action_coords.clear()
+                coord_loop_count = 0
+            
             coord_already_placed = False
-            coord_not_adjecent = False
             # Randomly select a coord
             xcoord = random.randint(0, 10)
             ycoord = random.randint(0, 10)
+
+            right = xcoord + 1
+            if right == 11: right = 0
+            left = xcoord - 1
+            if left == -1: left = 10
+            up = ycoord + 1
+            if up == 11: up = 0
+            down = ycoord - 1
+            if down == -1: down = 10
+            
             # Check if the coord has been placed on the board
             for place_action_piece in self.place_action_list:
                 for coord in place_action_piece.coords:
@@ -300,58 +319,47 @@ class Agent:
             # chosen before by the player. If it is, add the coord to the place_action_coords list
             elif len(place_action_coords) == 0 and move_count != 0:
                 if Coord(xcoord, ycoord) not in place_action_coords:
-                    right = xcoord + 1
-                    if right == 11: right = 0
-                    left = xcoord - 1
-                    if left == -1: left = 10
-                    up = ycoord + 1
-                    if up == 11: up = 0
-                    down = ycoord - 1
-                    if down == -1: down = 10
 
-                    action_arr = self.place_action_red if color == PlayerColor.RED else self.place_action_blue
+                    coord_chosen = False
 
                     for action in action_arr:
                         for coord in action.coords:
                             if right == coord.r and ycoord == coord.c:
                                 place_action_coords.append(Coord(xcoord, ycoord))
+                                coord_chosen = True
+                                break
                             elif left == coord.r and ycoord == coord.c:
                                 place_action_coords.append(Coord(xcoord, ycoord))
+                                coord_chosen = True
+                                break
                             elif xcoord == coord.r and up == coord.c:
                                 place_action_coords.append(Coord(xcoord, ycoord))
+                                coord_chosen = True
+                                break
                             elif xcoord == coord.r and down == coord.c:
                                 place_action_coords.append(Coord(xcoord, ycoord))
-                            else:
-                                coord_not_adjecent = True
+                                coord_chosen = True
                                 break
-                        if coord_not_adjecent:
+                            else:
+                                continue
+                        if coord_chosen:
                             break
-                    if coord_not_adjecent:
-                        continue
+
             # If this is not the first move of the game and some coords have been chosen
             # then check if the coord is adjacent to any of the coords that has been
             # chosen in the place_action_coords list. If it is, add the coord to the place_action_coords list
             else:
                 if Coord(xcoord, ycoord) not in place_action_coords:
-                    right = xcoord + 1
-                    if right == 11: right = 0
-                    left = xcoord - 1
-                    if left == -1: left = 10
-                    up = ycoord + 1
-                    if up == 11: up = 0
-                    down = ycoord - 1
-                    if down == -1: down = 10
-
-                    if right == place_action_coords[0].r and ycoord == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    elif left == place_action_coords[0].r and ycoord == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    elif xcoord == place_action_coords[0].r and up == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    elif xcoord == place_action_coords[0].r and down == place_action_coords[0].c:
-                        place_action_coords.append(Coord(xcoord, ycoord))
-                    else:
-                        continue
+                    for coord in place_action_coords:
+                        if right == coord.r and ycoord == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif left == coord.r and ycoord == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord == coord.r and up == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                        elif xcoord == coord.r and down == coord.c:
+                            place_action_coords.append(Coord(xcoord, ycoord))
+                coord_loop_count += 1
 
         return place_action_coords
 
