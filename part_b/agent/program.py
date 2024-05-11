@@ -4,8 +4,9 @@
 import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
+# set the number of moves to be check and the depth of minimax as a global constant
 MAX_MOVES = 32
-MAX_DEPTH = 5
+MAX_DEPTH = 3
 
 class Agent:
     """
@@ -93,7 +94,6 @@ class Agent:
 
         # There is only one action type, PlaceAction
         place_action: PlaceAction = action
-        c1, c2, c3, c4 = place_action.coords
 
         # Here we are just printing out the PlaceAction coordinates for
         # demonstration purposes. You should replace this with your own logic
@@ -192,20 +192,27 @@ class Agent:
 
     # calculate utility of a possible move
     def utility(self, color: PlayerColor, new_red, new_blue, red, blue):
-
+        # generate possible moves and calculate the utility score
         possible_moves = self.possible_moves(color, new_red, new_blue)
-        block_clear_reward = 0
+        # reward given when more possible moves are available
         possible_moves_reward = len(possible_moves) if possible_moves != None else 0
+        # reward given when player's block is more than the opponent's block
         block_diff_reward = len(new_red) - len(new_blue)
+        # reward given when the new state has less block than the old state, i.e. clearing lines
+        block_clear_reward = len(red) + len(blue) - (len(new_red) + len(new_blue))
+        # assign weighting for each state of the game based on the number of blocks occupied
         if (len(red) + len(blue)) >= 60:
-            prev_new_difference = len(red) + len(blue) - (len(new_red) + len(new_blue))
-            block_clear_reward = prev_new_difference*3
-            block_diff_reward*=3
-            possible_moves_reward*=5
-        if (len(red) + len(blue)) >= 90:
+            block_diff_reward*=10
+            possible_moves_reward*=1
+        if (len(red) + len(blue)) >= 80:
             block_diff_reward*=2
-            block_clear_reward*=3
+            possible_moves_reward*=2
+            block_clear_reward*=12
+        if (len(red) + len(blue)) >= 100:
+            block_diff_reward*=2
+            block_clear_reward*=5
 
+        # calculate utility for each player
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
             if possible_moves == None: return float('-inf')
@@ -220,21 +227,27 @@ class Agent:
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
     def minimax(self, maximizing, depth, new_red, new_blue, red, blue, alpha=float('-inf'), beta=float('inf')):
-        # generate possible moves for given state (red and blue)
-        # if no possible move, return the utility
-        # extra_move_check = 0 if depth <= 1 else 2
-        move_check = MAX_MOVES/(2 ** (MAX_DEPTH - depth))
+        # determine the maximum moves to be checked based on the current game state (number of occupied blocks)
+        occupied = len(new_red) + len(new_blue)
+        max_moves = MAX_MOVES
+        if occupied <= 90: max_moves = MAX_MOVES/2
+        if occupied <= 60: max_moves = MAX_MOVES/4
+        move_check = (max_moves)/(2 ** (MAX_DEPTH - depth))
+        # return the utility score if no possible move or reached the maximum depth
         if maximizing:
-            moves = self.possible_moves(PlayerColor.RED, new_red, new_blue) 
+            moves = self.possible_moves(PlayerColor.RED, new_red, new_blue)
+            # cut off a node with the number of possible moves more than the maximum moves check number
             if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
                 return self.utility(PlayerColor.RED, new_red, new_blue, red, blue), None
         else:
+            # do the same thing for the minimising player (blue)
             moves = self.possible_moves(PlayerColor.BLUE, new_red, new_blue)
             if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
                 return self.utility(PlayerColor.BLUE, new_red, new_blue, red, blue), None
 
-        # loop through the possible moves and search till the end of the tree
+        # counting the number of moves checked
         move_counts = 0
+        # implementing minmax
         if maximizing:
             value = float('-inf')
             best_movement = None
@@ -246,11 +259,12 @@ class Agent:
                 if score >= value:
                     value = score
                     best_movement = move
+                # implementing alpha-beta pruning for maximizing player (red)
                 if value >= beta:
-                    # print(f"AB pruned on depth {depth} and move number {move_counts} for {PlayerColor.RED}")
                     break
                 alpha = max(alpha, value)
-                if move_counts >= MAX_MOVES: break
+                # cut off if the number of moves reached the maximum moves to be checked
+                if move_counts >= max_moves: break
         else:
             value = float('inf')
             best_movement = None
@@ -262,12 +276,12 @@ class Agent:
                 if score <= value:
                     value = score
                     best_movement = move
+                # implementing alpha-beta pruning for minimizing player (blue)
                 if value <= alpha:
-                    # print(f"AB pruned on depth {depth} and move number {move_counts} for {PlayerColor.BLUE}")
                     break
                 beta = min(beta, value)
-                if move_counts >= MAX_MOVES: break
-        # if (depth <= 2): print(f"Current Depth: {depth} | Possible Moves: {len(moves)} | Move Checked: {move_counts}")
+                # cut off if the number of moves reached the maximum moves to be checked 
+                if move_counts >= max_moves: break
         return value, best_movement
     
     def random_move(self, color, red, blue, move_count):
