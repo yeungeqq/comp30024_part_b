@@ -7,7 +7,7 @@ import multiprocessing
 
 num_games = 10
 opponent = "testing_agents/agent2"
-directory = "game_logs/random_1/"
+directory = "game_logs/random_1/18_3/"
 
 def run_script(args):
     subprocess.run(["python", "-m", "referee", "-l"] + args + ["-s", "250", "-t", "180", "agent", opponent])

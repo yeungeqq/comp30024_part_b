@@ -4,8 +4,8 @@
 import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
-MAX_MOVES = 32
-MAX_DEPTH = 5
+MAX_MOVES = 16
+MAX_DEPTH = 3
 
 class Agent:
     """
