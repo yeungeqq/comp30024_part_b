@@ -338,12 +338,16 @@ class Agent:
                     for coord in action_arr:
                         if right == coord.r and ycoord == coord.c:
                             place_action_coords.append(Coord(xcoord, ycoord))
+                            break
                         elif left == coord.r and ycoord == coord.c:
                             place_action_coords.append(Coord(xcoord, ycoord))
+                            break
                         elif xcoord == coord.r and up == coord.c:
                             place_action_coords.append(Coord(xcoord, ycoord))
+                            break
                         elif xcoord == coord.r and down == coord.c:
                             place_action_coords.append(Coord(xcoord, ycoord))
+                            break
                         else:
                             continue
 
