@@ -136,7 +136,6 @@ class Agent:
                     place_action_coords[2], 
                     place_action_coords[3]
                 )
-            
 
     def update(self, color: PlayerColor, action: Action, **referee: dict):
         """
@@ -166,15 +165,6 @@ class Agent:
                 self.current_blue.append(coord)
         
         self.current_red, self.current_blue = self.eliminate_lines(self.current_red, self.current_blue)
-
-
-        print(f"Testing: {color} played PLACE action: {c1}, {c2}, {c3}, {c4}")
-        print('\n')
-        print("agent 2 place action list: " + str(self.place_action_list))
-        print('\n')
-        print("agent 2 red place action list: " + str(self.place_action_red))
-        print('\n')
-        print("agent 2 blue place action list: " + str(self.place_action_blue))
     
     def eliminate_lines(self, red, blue):
         red_clone = red[:]
