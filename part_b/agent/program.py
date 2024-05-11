@@ -199,9 +199,9 @@ class Agent:
         block_diff_reward = len(new_red) - len(new_blue)
         if (len(red) + len(blue)) >= 80:
             prev_new_difference = len(red) + len(blue) - (len(new_red) + len(new_blue))
-            block_clear_reward = prev_new_difference*1.5
-            block_diff_reward*=2
-            possible_moves_reward*=3
+            block_clear_reward = prev_new_difference*2
+            block_diff_reward*=3
+            possible_moves_reward*=5
 
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
