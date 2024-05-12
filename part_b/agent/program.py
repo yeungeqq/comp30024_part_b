@@ -1,6 +1,7 @@
 # COMP30024 Artificial Intelligence, Semester 1 2024
 # Project Part B: Game Playing Agent
 
+import csv
 import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
@@ -50,14 +51,20 @@ class Agent:
                     place_action_coords = self.random_move(PlayerColor.RED, self.current_red,
                                                            self.current_blue, self.player_move_count)
                     self.player_move_count+=1
+                    self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
                     return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
+<<<<<<< Updated upstream
                 value, place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue, [], [])
                 # print(f"Utility score of the move: {value}")
+=======
+                value, place_action_coords = self.minimax(True, depth, self.current_red, self.current_blue, [], [])
+                self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
+>>>>>>> Stashed changes
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -70,6 +77,7 @@ class Agent:
                     place_action_coords = self.random_move(PlayerColor.BLUE, self.current_red,
                                                            self.current_blue, self.player_move_count)
                     self.player_move_count+=1
+                    self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
                     return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -78,6 +86,7 @@ class Agent:
                     )
                 value, place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue, [], [])
                 # print(f"Utility score of the move: {value}")
+                self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -220,10 +229,35 @@ class Agent:
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
     def minimax(self, maximizing, depth, new_red, new_blue, red, blue, alpha=float('-inf'), beta=float('inf')):
+<<<<<<< Updated upstream
         # generate possible moves for given state (red and blue)
         # if no possible move, return the utility
         # extra_move_check = 0 if depth <= 1 else 2
         move_check = MAX_MOVES/(2 ** (MAX_DEPTH - depth))
+=======
+        # determine the maximum moves to be checked based on the current game state (number of occupied blocks)
+        occupied = len(new_red) + len(new_blue)
+        initial_depth = MAX_DEPTH
+        max_moves = MAX_MOVES
+        if occupied >= 100:
+            max_moves = MAX_MOVES/32
+            initial_depth-=1
+        if occupied >= 80:
+            max_moves = MAX_MOVES/16
+            initial_depth-=1
+        if occupied >= 60:
+            max_moves = MAX_MOVES/8
+            initial_depth-=1
+        if occupied >= 40:
+            max_moves = MAX_MOVES/4
+            initial_depth-=1
+        if occupied >= 20:
+            max_moves = MAX_MOVES/2
+            initial_depth-=1
+        move_check = (max_moves)/(2 ** (initial_depth - depth))
+        if occupied <= 100 and depth != MAX_DEPTH: move_check/=2
+        # return the utility score if no possible move or reached the maximum depth
+>>>>>>> Stashed changes
         if maximizing:
             moves = self.possible_moves(PlayerColor.RED, new_red, new_blue) 
             if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
@@ -386,3 +420,8 @@ class Agent:
             if coord in block: block.remove(coord)
         if len(eliminated_coords_list) > 0 : elimiated = True
         return red_clone, blue_clone, elimiated
+    
+    def write_csv(self, data):
+        with open('data.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(data)
