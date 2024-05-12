@@ -5,8 +5,8 @@ import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 # set the number of moves to be check and the depth of minimax as a global constant
-MAX_MOVES = 32
-MAX_DEPTH = 3
+MAX_MOVES = 64
+MAX_DEPTH = 5
 
 class Agent:
     """
@@ -44,6 +44,18 @@ class Agent:
         # the agent is playing as BLUE or RED. Obviously this won't work beyond
         # the initial moves of the game, so you should use some game playing
         # technique(s) to determine the best action to take.
+
+        # adjust the depth of search based on the current game state (search deeper at the later stage)
+        occupied = (len(self.current_red) + len(self.current_blue))
+        depth = MAX_DEPTH
+        if occupied <= 100:
+            depth-=1
+        if occupied <= 80:
+            depth-=1
+        if occupied <= 60:
+            depth-=1
+        if occupied <= 40:
+            depth-=1
         match self._color:
             case PlayerColor.RED:
                 print("Testing: RED is playing a PLACE action")
@@ -57,8 +69,7 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                value, place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue, [], [])
-                # print(f"Utility score of the move: {value}")
+                value, place_action_coords = self.minimax(True, depth, self.current_red, self.current_blue, [], [])
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -77,7 +88,7 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                value, place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue, [], [])
+                value, place_action_coords = self.minimax(False, depth, self.current_red, self.current_blue, [], [])
                 # print(f"Utility score of the move: {value}")
                 return PlaceAction(
                         place_action_coords[0], 
@@ -200,27 +211,33 @@ class Agent:
         block_diff_reward = len(new_red) - len(new_blue)
         # reward given when the new state has less block than the old state, i.e. clearing lines
         block_clear_reward = len(red) + len(blue) - (len(new_red) + len(new_blue))
+        # calculate the block eliminated for each player
+        red_diff_reward = len(new_red) - len(red)
+        blue_diff_reward = len(new_blue) - len(blue)
         # assign weighting for each state of the game based on the number of blocks occupied
         if (len(red) + len(blue)) >= 60:
-            block_diff_reward*=10
-            possible_moves_reward*=1
+            red_diff_reward*=3
+            blue_diff_reward*=3
         if (len(red) + len(blue)) >= 80:
-            block_diff_reward*=2
-            possible_moves_reward*=2
-            block_clear_reward*=12
+            red_diff_reward*=5
+            block_diff_reward*=5
+            possible_moves_reward*=3
+            block_clear_reward*=3
         if (len(red) + len(blue)) >= 100:
-            block_diff_reward*=2
+            possible_moves_reward*=5
+            red_diff_reward*=10
+            block_diff_reward*=10
             block_clear_reward*=5
 
         # calculate utility for each player
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
             if possible_moves == None: return float('-inf')
-            score = block_diff_reward + possible_moves_reward + block_clear_reward
+            score = block_diff_reward + possible_moves_reward + block_clear_reward - red_diff_reward + blue_diff_reward
         else:
             # no possible move for blue -> red win, score = inf
             if possible_moves == None: return float('inf')
-            score = block_diff_reward - possible_moves_reward - block_clear_reward
+            score = block_diff_reward - possible_moves_reward - block_clear_reward - red_diff_reward + blue_diff_reward
         return score
 
     
@@ -229,20 +246,32 @@ class Agent:
     def minimax(self, maximizing, depth, new_red, new_blue, red, blue, alpha=float('-inf'), beta=float('inf')):
         # determine the maximum moves to be checked based on the current game state (number of occupied blocks)
         occupied = len(new_red) + len(new_blue)
+        initial_depth = MAX_DEPTH
         max_moves = MAX_MOVES
-        if occupied <= 90: max_moves = MAX_MOVES/2
-        if occupied <= 60: max_moves = MAX_MOVES/4
-        move_check = (max_moves)/(2 ** (MAX_DEPTH - depth))
+        if occupied <= 100:
+            max_moves = MAX_MOVES/2
+            initial_depth-=1
+        if occupied <= 80:
+            max_moves = MAX_MOVES/4
+            initial_depth-=1
+        if occupied <= 60:
+            max_moves = MAX_MOVES/16
+            initial_depth-=1
+        if occupied <= 40:
+            max_moves = MAX_MOVES/32
+            initial_depth-=1
+        move_check = (max_moves)/(2 ** (initial_depth - depth))
+        if occupied <= 100 and depth != MAX_DEPTH: move_check/=2
         # return the utility score if no possible move or reached the maximum depth
         if maximizing:
             moves = self.possible_moves(PlayerColor.RED, new_red, new_blue)
             # cut off a node with the number of possible moves more than the maximum moves check number
-            if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
+            if moves is None or (len(moves) > move_check and depth != initial_depth) or depth == 0:
                 return self.utility(PlayerColor.RED, new_red, new_blue, red, blue), None
         else:
             # do the same thing for the minimising player (blue)
             moves = self.possible_moves(PlayerColor.BLUE, new_red, new_blue)
-            if moves is None or (len(moves) > move_check and depth != MAX_DEPTH) or depth == 0:
+            if moves is None or (len(moves) > move_check and depth != initial_depth) or depth == 0:
                 return self.utility(PlayerColor.BLUE, new_red, new_blue, red, blue), None
 
         # counting the number of moves checked
