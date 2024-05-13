@@ -5,7 +5,7 @@ import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 # set the number of moves to be check and the depth of minimax as a global constant
-MAX_MOVES = 64
+MAX_MOVES = 32
 MAX_DEPTH = 5
 
 class Agent:
@@ -209,35 +209,24 @@ class Agent:
         possible_moves_reward = len(possible_moves) if possible_moves != None else 0
         # reward given when player's block is more than the opponent's block
         block_diff_reward = len(new_red) - len(new_blue)
-        # reward given when the new state has less block than the old state, i.e. clearing lines
-        block_clear_reward = len(red) + len(blue) - (len(new_red) + len(new_blue))
-        # calculate the block eliminated for each player
-        red_diff_reward = len(new_red) - len(red)
-        blue_diff_reward = len(new_blue) - len(blue)
         # assign weighting for each state of the game based on the number of blocks occupied
-        if (len(red) + len(blue)) >= 60:
-            red_diff_reward*=3
-            blue_diff_reward*=3
-        if (len(red) + len(blue)) >= 80:
-            red_diff_reward*=5
-            block_diff_reward*=5
-            possible_moves_reward*=3
-            block_clear_reward*=3
-        if (len(red) + len(blue)) >= 100:
-            possible_moves_reward*=5
-            red_diff_reward*=10
+        if (len(new_red) + len(new_blue)) >= 60:
+            block_diff_reward*=1000
+        if (len(new_red) + len(new_blue)) >= 80:
             block_diff_reward*=10
-            block_clear_reward*=5
+            possible_moves_reward*=5
+        if (len(new_red) + len(new_blue)) >= 100:
+            possible_moves_reward*=20
 
         # calculate utility for each player
         if color == PlayerColor.RED:
             # no possible move for red -> blue win, score = -inf
             if possible_moves == None: return float('-inf')
-            score = block_diff_reward + possible_moves_reward + block_clear_reward - red_diff_reward + blue_diff_reward
+            score = block_diff_reward + possible_moves_reward
         else:
             # no possible move for blue -> red win, score = inf
             if possible_moves == None: return float('inf')
-            score = block_diff_reward - possible_moves_reward - block_clear_reward - red_diff_reward + blue_diff_reward
+            score = block_diff_reward - possible_moves_reward
         return score
 
     
