@@ -7,7 +7,11 @@ import multiprocessing
 
 num_games = 10
 opponent = "testing_agents/agent2"
+<<<<<<< Updated upstream:part_b/run.py
 directory = "game_logs/random_1/20_4/"
+=======
+directory = "game_logs/random_1/"
+>>>>>>> Stashed changes:part_b/test.py
 
 def run_script(args):
     subprocess.run(["python", "-m", "referee", "-l"] + args + ["-s", "250", "-t", "180", "agent", opponent])

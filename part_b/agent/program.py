@@ -59,10 +59,15 @@ class Agent:
                         place_action_coords[3]
                     )
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 value, place_action_coords = self.minimax(True, MAX_DEPTH, self.current_red, self.current_blue, [], [])
                 # print(f"Utility score of the move: {value}")
 =======
                 value, place_action_coords = self.minimax(True, depth, self.current_red, self.current_blue, [], [])
+                self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
+>>>>>>> Stashed changes
+=======
+                value, place_action_coords = self.minimax(True, depth, self.current_red, self.current_blue)
                 self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
 >>>>>>> Stashed changes
                 return PlaceAction(
@@ -77,7 +82,11 @@ class Agent:
                     place_action_coords = self.random_move(PlayerColor.BLUE, self.current_red,
                                                            self.current_blue, self.player_move_count)
                     self.player_move_count+=1
+<<<<<<< Updated upstream
                     self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
+=======
+                    #self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
+>>>>>>> Stashed changes
                     return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -86,7 +95,11 @@ class Agent:
                     )
                 value, place_action_coords = self.minimax(False, MAX_DEPTH, self.current_red, self.current_blue, [], [])
                 # print(f"Utility score of the move: {value}")
+<<<<<<< Updated upstream
                 self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
+=======
+                #self.write_csv([referee["time_remaining"], len(self.current_red), len(self.current_blue), len(self.current_red) + len(self.current_blue)])
+>>>>>>> Stashed changes
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -420,8 +433,16 @@ class Agent:
             if coord in block: block.remove(coord)
         if len(eliminated_coords_list) > 0 : elimiated = True
         return red_clone, blue_clone, elimiated
+<<<<<<< Updated upstream
     
     def write_csv(self, data):
         with open('data.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(data)
+=======
+
+    def write_csv(self, data):
+        with open('data.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(data)
+>>>>>>> Stashed changes
