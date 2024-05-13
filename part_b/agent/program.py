@@ -5,7 +5,7 @@ import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 # set the number of moves to be check and the depth of minimax as a global constant
-MAX_MOVES = 32
+MAX_MOVES = 512
 MAX_DEPTH = 5
 
 class Agent:
@@ -69,7 +69,7 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                value, place_action_coords = self.minimax(True, depth, self.current_red, self.current_blue, [], [])
+                value, place_action_coords = self.minimax(True, depth, self.current_red, self.current_blue)
                 return PlaceAction(
                         place_action_coords[0], 
                         place_action_coords[1], 
@@ -88,7 +88,7 @@ class Agent:
                         place_action_coords[2], 
                         place_action_coords[3]
                     )
-                value, place_action_coords = self.minimax(False, depth, self.current_red, self.current_blue, [], [])
+                value, place_action_coords = self.minimax(False, depth, self.current_red, self.current_blue)
                 # print(f"Utility score of the move: {value}")
                 return PlaceAction(
                         place_action_coords[0], 
@@ -202,7 +202,7 @@ class Agent:
         return actions
 
     # calculate utility of a possible move
-    def utility(self, color: PlayerColor, new_red, new_blue, red, blue):
+    def utility(self, color: PlayerColor, new_red, new_blue):
         # generate possible moves and calculate the utility score
         possible_moves = self.possible_moves(color, new_red, new_blue)
         # reward given when more possible moves are available
@@ -232,22 +232,22 @@ class Agent:
     
     # return an action based on the utility of given moves by using the minimax strategy
     # can implement ab pruning in this function
-    def minimax(self, maximizing, depth, new_red, new_blue, red, blue, alpha=float('-inf'), beta=float('inf')):
+    def minimax(self, maximizing, depth, new_red, new_blue, alpha=float('-inf'), beta=float('inf')):
         # determine the maximum moves to be checked based on the current game state (number of occupied blocks)
         occupied = len(new_red) + len(new_blue)
         initial_depth = MAX_DEPTH
         max_moves = MAX_MOVES
         if occupied <= 100:
-            max_moves = MAX_MOVES/2
-            initial_depth-=1
-        if occupied <= 80:
-            max_moves = MAX_MOVES/4
-            initial_depth-=1
-        if occupied <= 60:
             max_moves = MAX_MOVES/16
             initial_depth-=1
+        if occupied <= 80:
+            max_moves = MAX_MOVES/64
+            initial_depth-=1
+        if occupied <= 60:
+            max_moves = MAX_MOVES/128
+            initial_depth-=1
         if occupied <= 40:
-            max_moves = MAX_MOVES/32
+            max_moves = max_moves/256
             initial_depth-=1
         move_check = (max_moves)/(2 ** (initial_depth - depth))
         if occupied <= 100 and depth != MAX_DEPTH: move_check/=2
@@ -256,12 +256,12 @@ class Agent:
             moves = self.possible_moves(PlayerColor.RED, new_red, new_blue)
             # cut off a node with the number of possible moves more than the maximum moves check number
             if moves is None or (len(moves) > move_check and depth != initial_depth) or depth == 0:
-                return self.utility(PlayerColor.RED, new_red, new_blue, red, blue), None
+                return self.utility(PlayerColor.RED, new_red, new_blue), None
         else:
             # do the same thing for the minimising player (blue)
             moves = self.possible_moves(PlayerColor.BLUE, new_red, new_blue)
             if moves is None or (len(moves) > move_check and depth != initial_depth) or depth == 0:
-                return self.utility(PlayerColor.BLUE, new_red, new_blue, red, blue), None
+                return self.utility(PlayerColor.BLUE, new_red, new_blue), None
 
         # counting the number of moves checked
         move_counts = 0
@@ -273,7 +273,7 @@ class Agent:
                 move_counts+=1
                 # eliminate lines if there are filled lines
                 new_red_, new_blue_, _ = self.eliminate_lines(new_red[:]+move, new_blue)
-                score = self.minimax(False, depth - 1, new_red_, new_blue_, new_red, new_blue)[0]
+                score = self.minimax(False, depth - 1, new_red_, new_blue_)[0]
                 if score >= value:
                     value = score
                     best_movement = move
@@ -290,7 +290,7 @@ class Agent:
                 move_counts+=1
                 # eliminate lines if there are filled lines
                 new_red_, new_blue_, _ = self.eliminate_lines(new_red, new_blue[:]+move)
-                score = self.minimax(True, depth - 1, new_red_, new_blue_, new_red, new_blue)[0]
+                score = self.minimax(True, depth - 1, new_red_, new_blue_)[0]
                 if score <= value:
                     value = score
                     best_movement = move
