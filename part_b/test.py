@@ -6,7 +6,7 @@ import subprocess
 import multiprocessing
 
 num_games = 10
-opponent = "testing_agents/agent2"
+opponent = "testing_agents/agent3"
 directory = "game_logs/random_1/"
 
 def run_script(args):
