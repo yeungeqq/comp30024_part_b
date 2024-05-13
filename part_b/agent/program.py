@@ -5,7 +5,7 @@ import random
 from referee.game import PlayerColor, Action, PlaceAction, Coord
 
 # set the number of moves to be check and the depth of minimax as a global constant
-MAX_MOVES = 512
+MAX_MOVES = 256
 MAX_DEPTH = 5
 
 class Agent:
@@ -54,7 +54,7 @@ class Agent:
             depth-=1
         if occupied <= 60:
             depth-=1
-        if occupied <= 40:
+        if occupied <= 20:
             depth-=1
         match self._color:
             case PlayerColor.RED:
@@ -238,16 +238,17 @@ class Agent:
         initial_depth = MAX_DEPTH
         max_moves = MAX_MOVES
         if occupied <= 100:
-            max_moves = MAX_MOVES/16
+            max_moves = MAX_MOVES/8
             initial_depth-=1
         if occupied <= 80:
-            max_moves = MAX_MOVES/64
+            max_moves = MAX_MOVES/16
             initial_depth-=1
         if occupied <= 60:
-            max_moves = MAX_MOVES/128
+            max_moves = MAX_MOVES/64
             initial_depth-=1
         if occupied <= 40:
-            max_moves = max_moves/256
+            max_moves = MAX_MOVES/128
+        if occupied <= 20:
             initial_depth-=1
         move_check = (max_moves)/(2 ** (initial_depth - depth))
         if occupied <= 100 and depth != MAX_DEPTH: move_check/=2
